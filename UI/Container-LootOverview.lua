@@ -1,7 +1,7 @@
-local LootOverviewItem, AceGUI = EPGPR.UI.LootOverviewItem, EPGPR.Libs.AceGUI
+local LootOverviewItem, AceGUI, GetMasterLootCandidate, GiveMasterLoot = EPGPR.UI.LootOverviewItem, EPGPR.Libs.AceGUI, GetMasterLootCandidate, GiveMasterLoot
 
--- Current item announce data. slotId is current announcement, player is to whom we confirmed it to be given after announcement, and GP for how much
-local _announcing = {slotId = nil, player = nil, GP = nil}
+-- Current item announce data. slotId - current announcement, player - to whom we confirmed it to be given after announcement, and GP - for how much
+local _announcing = {}
 
 -- Refill the form with given items and show it
 local function showItems(widget, _, items)
@@ -20,7 +20,7 @@ end
 local function clearSlot(widget, _, slotId, item)
     local children = widget.children
     -- clear the slot that has gone from the loot, there is no need to change states of slots yet,
-    -- as it could be something completely unrelated to current announcement being given
+    -- as it could be something completely unrelated to current announcement going on
     for i, child in ipairs(children) do
         if child:GetUserData("slotId") == slotId then
             table.remove(children, i)
@@ -30,10 +30,10 @@ local function clearSlot(widget, _, slotId, item)
     end
     -- if the slot in announcement is gone, record loot distribution happened through the announcement,
     -- signal all slots that announcement has finished, and clear current announcement.
-    if _announcing.slotId and _announcing.slotId == slotId then
+    if _announcing.slotId == slotId then
         -- reset announcement to nil
         local annoncingPlayer, GP = _announcing.player, _announcing.GP
-        _announcing = {slotId = nil, player = nil, GP = nil}
+        _announcing = {}
         -- process item distribution, recording GP if the item was given to the same player we requested it to be given in "giveSlot",
         -- any other case is either "master looter changed his mind" or most probably the disenchant case without any bids
         if item.candidate then EPGPR:ItemDistributed(item.candidate, item.link, annoncingPlayer == item.candidate and GP or nil) end
@@ -78,16 +78,17 @@ end
 
 -- Confirmation dialog on loot announce was "OK"-ed to be given to the player for GP
 -- This function is just going to signal the master loot to distribute the item, which can fail in certain circumstances
--- So to surely track what was given to whom, this is going to be done in "clearSlot", which is going to be called from LOOT_SLOT_CLEARED event,
--- when actual item is gone from the loot, and here we just save to whom and by which price we intended to give the loot
+-- So to surely track what was given to whom, it is going to be done in "clearSlot", which is going to be called from LOOT_SLOT_CLEARED event,
+-- when actual item is gone from the loot. And here we save to whom and by which price we command to give it
 local function giveSlot(_, _, slotId, player, GP)
     if _announcing.slotId and _announcing.slotId ~= slotId then return end -- confirmation doesn't match what we are currently ditributing
-    -- save to whom we are giving the loot and by which price
-    _announcing.player = player
-    _announcing.GP = GP
     -- Find the player by name in master loot list and trigger giving the item to him
     for i = 1, 40 do
         if GetMasterLootCandidate(slotId, i) == player then
+            -- save to whom we are giving the loot and by which price
+            _announcing.player = player
+            _announcing.GP = GP
+            -- distribute
             GiveMasterLoot(slotId, i);
             break;
         end
@@ -95,9 +96,9 @@ local function giveSlot(_, _, slotId, player, GP)
 end
 
 -- Form was closed.
--- As there is no other way to open it, as close and open the loot again, reinitializng the form, we just wipe it state clean
+-- As there is no other usual way to open it, as close and open the loot again, reinitializng the form with items, we just wipe the state clean
 local function onClose(widget, _)
-    _announcing = {slotId = nil, player = nil, GP = nil}
+    _announcing = {}
     widget:ReleaseChildren()
 end
 
@@ -105,9 +106,9 @@ end
 EPGPR.UI.LootOverview = function()
 
     local LootOverview = AceGUI:Create("Window")
+    LootOverview.frame:SetMinResize(400, 100)
     LootOverview:SetAutoAdjustHeight(true)
     LootOverview:SetWidth(400)
-    LootOverview.frame:SetMinResize(400, 100)
     LootOverview:SetLayout("List")
     LootOverview:SetTitle("Loot Overview")
 

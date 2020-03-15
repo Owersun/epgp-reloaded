@@ -1,4 +1,4 @@
-local EPGPR, LootOverviewItemAnnouncement, AceGUI, SendAddonMessage = EPGPR, EPGPR.UI.LootOverviewItemAnnounce, EPGPR.Libs.AceGUI, C_ChatInfo.SendAddonMessage
+local EPGPR, LootOverviewItemAnnouncement, AceGUI = EPGPR, EPGPR.UI.LootOverviewItemAnnounce, EPGPR.Libs.AceGUI
 
 -- LootOverviewItem factory that produce item rows for LootOverview
 EPGPR.UI.LootOverviewItem = function(slotId, item)
@@ -21,9 +21,8 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
     label:SetImage(item.image)
     label:SetImageSize(40, 40)
     label:SetText(item.link)
-    -- label:SetRelativeWidth(0.7)
-    label:SetWidth(250)
     label.frame:SetMinResize(250, 40)
+    label:SetWidth(250)
     label:SetHeight(40)
     label:SetJustifyH("LEFT")
     label:SetJustifyV("MIDDLE")
@@ -40,18 +39,12 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
     editbox:SetText(item.GP)
     editbox:SetWidth(30)
     LootOverviewItem:AddChild(editbox)
-    -- attach to the left button on the right of the frame
-    -- editbox:ClearAllPoints()
-    -- editbox:SetPoint("RIGHT", button.frame, "LEFT")
 
     local button = AceGUI:Create("Button")
     button:SetText("Announce")
     button:SetAutoWidth(true)
     button:SetCallback("OnClick", function() EPGPR:SendMessage(buttonSendsMessage, slotId) end)
     LootOverviewItem:AddChild(button)
-    -- attach to the right of the frame
-    -- button.frame:ClearAllPoints()
-    -- button.frame:SetPoint("RIGHT", LootOverviewItem.content, "RIGHT")
 
     -- callback that is going to be called when a player row is pressed in the announcement frame
     local function giveItemTo(player, GP)
@@ -67,8 +60,7 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
             editbox:SetDisabled(true)
             button:SetText("Cancel")
             buttonSendsMessage = "EPGPR_ANNOUNCEMENT_CANCEL"
-            -- add two new elements
-            -- countdown
+            -- 1) countdown
             if EPGPR.config.bidding.countdownEnable then
                 local statusbar = AceGUI:Create("StatusBar")
                 statusbar:SetHeight(20)
@@ -86,13 +78,14 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
                 end, max)
                 statusbar:SetCallback("OnRelease", function() countdown:Cancel() end)
                 widget:AddChild(statusbar)
-                -- DBM/BigWigs countdown
-                SendAddonMessage("D4C", ("U\t%d\t%s"):format(seconds, item.link), "RAID")
+                -- DBM/BigWigs countdown bar
+                EPGPR:SendCommMessage("D4C", ("U\t%d\t%s"):format(seconds, item.link), "RAID")
             end
-            -- create announcement table with bidders and announce to loot
+            -- 2) announcement table with bidders
             local GP = tonumber(editbox:GetText()) or item.GP
             _UILootOverviewItemAnnouncement = LootOverviewItemAnnouncement(giveItemTo, GP)
             widget:AddChild(_UILootOverviewItemAnnouncement)
+            -- Let the rumble begin
             EPGPR:ChatAnnounceLoot(item.link, GP)
         -- some other slot is being announced
         else
@@ -102,7 +95,7 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
         widget:DoLayout()
     end
 
-    -- announcement has been finished/canceled, all slots can be re-enabled, and if it was for this slot, the announcement frame cleared
+    -- announcement has been finished/cancelled, all slots can be re-enabled, and if it was for this slot, the announcement frame cleared
     local function announceFinish(widget, _, announceSlotId)
         -- Remove "announcement" sub-frame and reset own state
         if slotId == announceSlotId and _UILootOverviewItemAnnouncement then
@@ -119,6 +112,7 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
             table.remove(widget.children, 2)
             button:SetText("Announce")
         end
+        -- Re-enable frame elements in general
         button:SetDisabled(false)
         editbox:SetDisabled(false)
         widget:DoLayout()

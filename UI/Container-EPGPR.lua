@@ -1,4 +1,4 @@
-local AceGUI = EPGPR.Libs.AceGUI
+local AceGUI, RAID_CLASS_COLORS, unpack = EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
 
 local function tabStangings(container)
     local l = AceGUI:Create("Label")
