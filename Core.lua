@@ -38,10 +38,8 @@ end
 function EPGPR:OnEnable()
     -- Register events that we need to operate in any state (active/inactive)
     self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
-
     -- Print we are done
     self:Print("Enabled. Type /epgp to show options.")
-
     -- find out our own state after start (for cases of ui reload)
     self:DetermineTheState()
 end
@@ -85,8 +83,7 @@ function EPGPR:Activate()
     -- Register our events
     self:EventsRegister()
     -- Hook to master loot function to track all items being distributed
-    if self:IsHooked("GiveMasterLoot") then self:Unhook("GiveMasterLoot") end
-    self:Hook("GiveMasterLoot", EPGPR.GiveMasterLootHook, true)
+    if not self:IsHooked("GiveMasterLoot") then self:Hook("GiveMasterLoot", self.GiveMasterLootHook, true) end
     self:Print("Activated")
 end
 
@@ -111,7 +108,7 @@ EPGPR.OnTooltipSetItem = function(frame, ...)
         local itemId = itemLink:match("item:(%d+):")
         if itemId then Item:CreateFromItemID(tonumber(itemId)):ContinueOnItemLoad(function()
             local GP = EPGPR:ItemGPValue(itemLink)
-            frame:AddLine("GP: " .. tostring(GP))
+            frame:AddLine("GP Value: " .. tostring(GP))
         end) end
     end
 end

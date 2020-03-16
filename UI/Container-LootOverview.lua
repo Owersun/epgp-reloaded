@@ -1,4 +1,4 @@
-local LootOverviewItem, AceGUI, GetMasterLootCandidate, GiveMasterLoot = EPGPR.UI.LootOverviewItem, EPGPR.Libs.AceGUI, GetMasterLootCandidate, GiveMasterLoot
+local LootOverviewItem, AceGUI, GetMasterLootCandidate = EPGPR.UI.LootOverviewItem, EPGPR.Libs.AceGUI, GetMasterLootCandidate
 
 -- Current item announce data. slotId - current announcement, player - to whom we confirmed it to be given after announcement, and GP - for how much
 local _announcing = {}
@@ -32,11 +32,11 @@ local function clearSlot(widget, _, slotId, item)
     -- signal all slots that announcement has finished, and clear current announcement.
     if _announcing.slotId == slotId then
         -- reset announcement to nil
-        local annoncingPlayer, GP = _announcing.player, _announcing.GP
+        local name, GP = _announcing.name, _announcing.GP
         _announcing = {}
         -- process item distribution, recording GP if the item was given to the same player we requested it to be given in "giveSlot",
         -- any other case is either "master looter changed his mind" or most probably the disenchant case without any bids
-        if item.candidate then EPGPR:ItemDistributed(item.candidate, item.link, annoncingPlayer == item.candidate and GP or nil) end
+        if item.candidate then EPGPR:ItemDistributed(item.candidate, item.link, name == item.candidate and GP or nil) end
         -- reset items rows states
         -- second iteration through same children is required due to how lua does table remove inside loop through same table
         for _, child in ipairs(children) do child:Fire("AnnounceFinish", slotId) end
@@ -80,16 +80,16 @@ end
 -- This function is just going to signal the master loot to distribute the item, which can fail in certain circumstances
 -- So to surely track what was given to whom, it is going to be done in "clearSlot", which is going to be called from LOOT_SLOT_CLEARED event,
 -- when actual item is gone from the loot. And here we save to whom and by which price we command to give it
-local function giveSlot(_, _, slotId, player, GP)
+local function giveSlot(_, _, slotId, name, GP)
     if _announcing.slotId and _announcing.slotId ~= slotId then return end -- confirmation doesn't match what we are currently ditributing
     -- Find the player by name in master loot list and trigger giving the item to him
-    for i = 1, 40 do
-        if GetMasterLootCandidate(slotId, i) == player then
+    for candidateId = 1, 40 do
+        if GetMasterLootCandidate(slotId, candidateId) == name then
             -- save to whom we are giving the loot and by which price
-            _announcing.player = player
+            _announcing.name = name
             _announcing.GP = GP
             -- distribute
-            GiveMasterLoot(slotId, i);
+            GiveMasterLoot(slotId, candidateId);
             break;
         end
     end

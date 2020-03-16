@@ -47,9 +47,9 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
     LootOverviewItem:AddChild(button)
 
     -- callback that is going to be called when a player row is pressed in the announcement frame
-    local function giveItemTo(player, GP)
+    local function giveItemTo(name, GP)
         -- show confirmation popup "Really give this to that for that price?"
-        StaticPopup_Show("EPGPR_GIVE_LOOT_POPUP", nil, nil, {player = player, itemLink = item.link, slotId = slotId, GP = GP})
+        StaticPopup_Show("EPGPR_GIVE_LOOT_POPUP", nil, nil, {name = name, itemLink = item.link, slotId = slotId, GP = GP})
     end
 
     -- a slot is being announced, change our state accordingly

@@ -45,10 +45,10 @@ StaticPopupDialogs["EPGPR_GIVE_LOOT_POPUP"] = {
     button1 = "Yes",
     button2 = "Cancel",
     OnShow = function(self)
-        self.text:SetFormattedText("Do you want to give %s to %s for %d GP?", self.data.itemLink, self.data.player, self.data.GP);
+        self.text:SetFormattedText("Do you want to give %s to %s for %d GP?", self.data.itemLink, self.data.name, self.data.GP);
     end,
     OnAccept = function(self)
-        EPGPR:UILootOverview():Fire("GiveSlot", self.data.slotId, self.data.player, self.data.GP)
+        EPGPR:UILootOverview():Fire("GiveSlot", self.data.slotId, self.data.name, self.data.GP)
     end,
     timeout = 0,
     whileDead = false,
