@@ -27,13 +27,13 @@ end
 
 -- refresh guild roster
 local function guildRefreshRoster()
-    local guildRoster = {}
-    for i = 1, GetNumGuildMembers() do
+    local guildRoster, guildMemebers = {}, GetNumGuildMembers()
+    for i = 1, guildMemebers do
         local playerName, playerData = guildFetchMember(i)
         if playerName then guildRoster[playerName] = playerData end
     end
     EPGPR.State.guildRoster = guildRoster
-    EPGPR:Print("guildRoster updated")
+    EPGPR:Print(guildMemebers .. " members guildRoster updated")
 end
 
 -- Most of the time GUILD_ROSTER_UPDATE is fired multiple times for no reason.
@@ -59,8 +59,8 @@ end
 function EPGPR:GuildRefreshRoster()
     if suppressGuildUpdate then return end
     suppressGuildUpdate = true
-    C_Timer.After(0.5, function() suppressGuildUpdate = false end)
     guildRefreshRoster()
+    C_Timer.After(0.5, function() suppressGuildUpdate = false end)
 end
 
 -- Refresh guild member in local state and return his data

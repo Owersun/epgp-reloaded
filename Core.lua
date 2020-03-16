@@ -43,8 +43,7 @@ function EPGPR:OnEnable()
     self:Print("Enabled. Type /epgp to show options.")
 
     -- find out our own state after start (for cases of ui reload)
-    --self:DetermineTheState()
-    self:Activate() -- activate on start (temporary)
+    self:DetermineTheState()
 end
 
 -- Ther part where we end
@@ -81,10 +80,10 @@ end
 function EPGPR:Activate()
     if self.State.active then return end
     self.State.active = true
+    -- Refresh guild roster
+    EPGPR:GuildRefreshRoster()
     -- Register our events
     self:EventsRegister()
-    -- Refresh guild roster
-    GuildRoster()
     -- Hook to master loot function to track all items being distributed
     if self:IsHooked("GiveMasterLoot") then self:Unhook("GiveMasterLoot") end
     self:Hook("GiveMasterLoot", EPGPR.GiveMasterLootHook, true)

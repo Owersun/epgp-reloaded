@@ -1,4 +1,4 @@
-local AceGUI, RAID_CLASS_COLORS, unpack = EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
+local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
 
 local function tabStangings(container)
     local l = AceGUI:Create("Label")
@@ -24,10 +24,29 @@ local function tabRaid(container)
     container:AddChild(scroll)
 end
 
+local function tabStandby(container)
+    local scroll = AceGUI:Create("ScrollFrame")
+    scroll:SetFullWidth(true)
+    scroll:SetFullHeight(true)
+    scroll:SetLayout("List")
+    local standbyList = EPGPR.config.standby.list or {}
+    for name, _ in pairs(standbyList) do
+        EPGPR:Print(name)
+        local _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
+        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+        local l = AceGUI:Create("Label")
+        l:SetFullWidth(true)
+        l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
+        scroll:AddChild(l)
+    end
+    container:AddChild(scroll)
+end
+
 local function selectTab(container, event, tab)
     container:ReleaseChildren()
     if tab == "Standings" then tabStangings(container)
     elseif tab == "Raid" then tabRaid(container)
+    elseif tab == "Standby" then tabStandby(container)
     end
 end
 
@@ -47,7 +66,8 @@ EPGPR.UI.EPGPR = function()
     tabGroup:SetLayout("Fill")
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
-    tabGroup:SetTabs({ tab1, tab2 })
+    local tab3 = { text = "Standby", value = "Standby" }
+    tabGroup:SetTabs({ tab1, tab2, tab3 })
     tabGroup:SetCallback("OnGroupSelected", function(container, event, group)
         selectTab(container, event, group)
     end)
