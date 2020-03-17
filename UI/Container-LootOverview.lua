@@ -1,6 +1,6 @@
 local LootOverviewItem, AceGUI, GetMasterLootCandidate = EPGPR.UI.LootOverviewItem, EPGPR.Libs.AceGUI, GetMasterLootCandidate
 
--- Current item announce data. slotId - current announcement, player - to whom we confirmed it to be given after announcement, and GP - for how much
+-- Current item announce data. slotId - current announcement, name - to whom we confirmed it to be given after announcement, and GP - for how much
 local _announcing = {}
 
 -- Refill the form with given items and show it
@@ -89,6 +89,7 @@ local function giveSlot(_, _, slotId, name, GP)
             _announcing.name = name
             _announcing.GP = GP
             -- distribute
+            -- DO NOT upvalue this function, as this lead hook we do in Events decorate different function, and miss calls done from here
             GiveMasterLoot(slotId, candidateId);
             break;
         end
