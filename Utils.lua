@@ -1,4 +1,4 @@
-local EPGPR, SendChatMessage = EPGPR, SendChatMessage
+local EPGPR, SendChatMessage, GetRaidRosterInfo, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, MAX_RAID_MEMBERS
 
 -- Calculate GP value of an item from its link
 function EPGPR:ItemGPValue(itemLink)
@@ -27,8 +27,8 @@ function EPGPR:EncounterWon(encounterId)
         for name, _ in pairs(standbyList) do
             names[name] = EPRatio
         end
-        -- raid memnbers last, as they can jump on top of standby list, and they always should have full EP
-        for i = 1, 40 do
+        -- raid members last, as they can jump on top of standby list, and they always should have full EP
+        for i = 1, MAX_RAID_MEMBERS do
             local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
             if name and online then names[name] = 1 end
         end
@@ -51,7 +51,7 @@ end
 -- @Not used
 function EPGPR:CheckStandbyList()
     local standbyList = self.config.standby.list or {}
-    for i = 1, 40 do
+    for i = 1, MAX_RAID_MEMBERS do
         local raidName = GetRaidRosterInfo(i)
         if raidName then standbyList[raidName] = nil end
     end
@@ -70,13 +70,13 @@ end
 -- - what is this player EP/GP priority? for actual bid rating
 function EPGPR:GetBidderProperties(name)
     -- check the name is in our group
-    for j = 1, 40 do
-        local playerName, _, _, _, _, playerClass = GetRaidRosterInfo(j);
+    for i = 1, MAX_RAID_MEMBERS do
+        local playerName, _, _, _, _, playerClass = GetRaidRosterInfo(i);
         if playerName == name then
             -- fetch the guild member
             local _, playerRank, _, _, _, playerPR = EPGPR:GuildGetMemberInfo(name)
             -- return the information immideately, where "rank" and "PR" are going to be empty if the player is not part of the guild
-            return {name = playerName, rank = playerRank, class = playerClass, PR = playerPR} -- bail out as soon as possible
+            return {name = playerName, rank = playerRank or "?", class = playerClass or "?", PR = playerPR or 0} -- bail out as soon as possible
         end
     end
     return nil
