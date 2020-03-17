@@ -34,12 +34,13 @@ function EPGPR:LOOT_OPENED(_, autoLoot, isFromItem)
     -- build list of items in opened loot
     for slotID = 1, GetNumLootItems() do
         if LootSlotHasItem(slotID) then
-            local lootIcon, _, _, _, lootQuality, _, _, _, _ = GetLootSlotInfo(slotID);
+            local lootIcon, lootName, _, _, lootQuality, _, _, _, _ = GetLootSlotInfo(slotID);
             local itemLink = GetLootSlotLink(slotID)
             if itemLink then
                 itemsInLoot[slotID] = {
                     image = lootIcon,
                     link = itemLink,
+                    name = lootName,
                     GP = EPGPR:ItemGPValue(itemLink),
                     candidate = nil,
                 };

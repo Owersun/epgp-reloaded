@@ -79,7 +79,7 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
                 statusbar:SetCallback("OnRelease", function() countdown:Cancel() end)
                 widget:AddChild(statusbar)
                 -- DBM/BigWigs countdown bar
-                EPGPR:SendCommMessage("D4C", ("U\t%d\t%s"):format(seconds, item.link), "RAID")
+                EPGPR:SendCommMessage("D4C", ("U\t%d\t%s"):format(seconds, item.name), "RAID")
             end
             -- 2) announcement table with bidders
             local GP = tonumber(editbox:GetText()) or item.GP

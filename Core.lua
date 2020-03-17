@@ -1,4 +1,4 @@
-local IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide, GuildRoster = IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide, GuildRoster
+local IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide = IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide
 EPGPR = LibStub("AceAddon-3.0"):NewAddon("EPGPR", "AceEvent-3.0", "AceConsole-3.0", "AceHook-3.0", "AceComm-3.0", "AceSerializer-3.0")
 
 -- Local instances of ACE Libraries

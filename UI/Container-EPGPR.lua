@@ -25,28 +25,71 @@ local function tabRaid(container)
 end
 
 local function tabStandby(container)
-    local scroll = AceGUI:Create("ScrollFrame")
-    scroll:SetFullWidth(true)
-    scroll:SetFullHeight(true)
-    scroll:SetLayout("List")
+
+    local standby = AceGUI:Create("ScrollFrame")
+    standby:SetFullWidth(true)
+    standby:SetHeight(100)
+    standby:SetLayout("List")
     local standbyList = EPGPR.config.standby.list or {}
     for name, _ in pairs(standbyList) do
-        EPGPR:Print(name)
         local _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
         local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        local l = AceGUI:Create("Label")
+        local l = AceGUI:Create("InteractiveLabel")
         l:SetFullWidth(true)
+        l:SetCallback("OnClick", function()
+            EPGPR:ConfigSet({standby = { list = false }})
+            standbyList[name] = nil
+            EPGPR:ConfigSet({standby = { list = standbyList}})
+        end)
         l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
-        scroll:AddChild(l)
+        standby:AddChild(l)
     end
-    container:AddChild(scroll)
+    container:AddChild(standby)
+
+    local alts = AceGUI:Create("ScrollFrame")
+    alts:SetFullWidth(true)
+    alts:SetHeight(100)
+    alts:SetLayout("List")
+    local altsList = EPGPR.config.alts.list or {}
+    for alt, main in pairs(altsList) do
+        local _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
+        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+        local l = AceGUI:Create("InteractiveLabel")
+        l:SetFullWidth(true)
+        l:SetCallback("OnClick", function() EPGPR:SetAlt(alt, nil) end) -- remove alt on click
+        l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %d"):format(alt, classColor, main, playerRank, EP, GP, PR))
+        alts:AddChild(l)
+    end
+    container:AddChild(alts)
+
+    local addAlt = AceGUI:Create("SimpleGroup")
+    addAlt:SetLayout("Flow")
+    addAlt:SetFullWidth(true)
+    addAlt:SetHeight(40)
+    local a = AceGUI:Create("EditBox")
+    a:SetRelativeWidth(0.3)
+    a:DisableButton(true)
+    addAlt:AddChild(a)
+    local b = AceGUI:Create("EditBox")
+    b:SetRelativeWidth(0.3)
+    b:DisableButton(true)
+    addAlt:AddChild(b)
+    local ok = AceGUI:Create("Button")
+    ok:SetText("add alt")
+    ok:SetRelativeWidth(0.3)
+    ok:SetCallback("OnClick", function() EPGPR:SetAlt(a:GetText(), b:GetText()) end)
+    addAlt:AddChild(ok)
+    container:AddChild(addAlt)
 end
 
 local function selectTab(container, event, tab)
     container:ReleaseChildren()
-    if tab == "Standings" then tabStangings(container)
-    elseif tab == "Raid" then tabRaid(container)
-    elseif tab == "Standby" then tabStandby(container)
+    local content = AceGUI:Create("SimpleGroup")
+    content:SetLayout("Flow")
+    container:AddChild(content)
+    if tab == "Standings" then tabStangings(content)
+    elseif tab == "Raid" then tabRaid(content)
+    elseif tab == "Standby" then tabStandby(content)
     end
 end
 
@@ -68,9 +111,7 @@ EPGPR.UI.EPGPR = function()
     local tab2 = { text = "Raid", value = "Raid" }
     local tab3 = { text = "Standby", value = "Standby" }
     tabGroup:SetTabs({ tab1, tab2, tab3 })
-    tabGroup:SetCallback("OnGroupSelected", function(container, event, group)
-        selectTab(container, event, group)
-    end)
+    tabGroup:SetCallback("OnGroupSelected", selectTab)
     tabGroup:SelectTab("Standings")
     window:AddChild(tabGroup)
 

@@ -82,6 +82,14 @@ function EPGPR:GetBidderProperties(name)
     return nil
 end
 
+-- Set connection alt-main
+function EPGPR:SetAlt(alt, main)
+    local altList = EPGPR.config.alts.list
+    EPGPR:ConfigSet({alts = { list = false }})
+    altList[alt] = main
+    EPGPR:ConfigSet({alts = { list = altList}})
+end
+
 -- recursively merge b to a
 EPGPR.mergeTables = function(a, b)
     if type(b) ~= "table" or type(a) ~= "table" then return b end

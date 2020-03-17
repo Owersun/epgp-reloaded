@@ -80,7 +80,7 @@ local defaultConfig = {
         multibid = false,
     },
     alts = {
-
+        list = false
     },
     standby = {
         list = false,
