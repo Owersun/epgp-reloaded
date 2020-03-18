@@ -107,7 +107,7 @@ end
 -- names has to be in the fomr "{[name1] = ratioN, [name2] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
     massGuildUpdate(function()
-        for name, ratio in ipairs(names) do
+        for name, ratio in pairs(names) do
             EPGPR:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil)
         end
     end)
