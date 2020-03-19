@@ -1,4 +1,4 @@
-local EPGPR, SendChatMessage, GetRaidRosterInfo, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, MAX_RAID_MEMBERS
+local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, MAX_RAID_MEMBERS
 
 -- Calculate GP value of an item from its link
 function EPGPR:ItemGPValue(itemLink)
@@ -34,7 +34,7 @@ function EPGPR:EncounterWon(encounterId)
         end
         self:GuildAddEP(names, encounter.EP)
         self:ChatEncounterEPAwarded(encounter.name, encounter.EP)
-        self:SaveHistoryRow(nil, encounter.name, encounter.EP, nil)
+        self:SaveHistoryRow("RAID", encounter.name, encounter.EP, nil)
     end
 end
 

@@ -107,6 +107,7 @@ end
 EPGPR.UI.LootOverview = function()
 
     local LootOverview = AceGUI:Create("Window")
+    LootOverview:Hide()
     LootOverview.frame:SetMinResize(400, 100)
     LootOverview:SetAutoAdjustHeight(true)
     LootOverview:SetWidth(400)

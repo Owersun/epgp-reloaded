@@ -99,7 +99,7 @@ function EPGPR:GuildDecayEPGP(percent)
             local newGP = floor(max(basegp, oldGP * (100 - percent) / 100))
             if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
         end
-        EPGPR:SaveHistoryRow(nil, "Guild EPGP change " .. (-1 * percent) .. "%", nil, nil)
+        EPGPR:SaveHistoryRow("GUILD", "Guild EPGP change " .. (-1 * percent) .. "%", nil, nil)
     end)
 end
 

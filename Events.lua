@@ -30,6 +30,7 @@ local itemsInLoot = {}
 
 -- Loot was opened
 function EPGPR:LOOT_OPENED(_, autoLoot, isFromItem)
+    if autoLoot or isFromItem then return end
     itemsInLoot = {}
     -- build list of items in opened loot
     for slotID = 1, GetNumLootItems() do
