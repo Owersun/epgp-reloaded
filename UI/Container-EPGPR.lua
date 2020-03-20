@@ -32,14 +32,14 @@ local function tabStandby(container)
     standby:SetLayout("List")
     local standbyList = EPGPR.config.standby.list or {}
     for name, _ in pairs(standbyList) do
-        local _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
+        local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
         local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
         local l = AceGUI:Create("InteractiveLabel")
         l:SetFullWidth(true)
         l:SetCallback("OnClick", function()
-            EPGPR:ConfigSet({standby = { list = false }})
+            EPGPR:ConfigSet({ standby = { list = false }})
             standbyList[name] = nil
-            EPGPR:ConfigSet({standby = { list = standbyList}})
+            EPGPR:ConfigSet({ standby = { list = standbyList }})
         end)
         l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
         standby:AddChild(l)
@@ -52,12 +52,12 @@ local function tabStandby(container)
     alts:SetLayout("List")
     local altsList = EPGPR.config.alts.list or {}
     for alt, main in pairs(altsList) do
-        local _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
+        local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
         local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
         local l = AceGUI:Create("InteractiveLabel")
         l:SetFullWidth(true)
         l:SetCallback("OnClick", function() EPGPR:SetAlt(alt, nil) end) -- remove alt on click
-        l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %d"):format(alt, classColor, main, playerRank, EP, GP, PR))
+        l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
         alts:AddChild(l)
     end
     container:AddChild(alts)

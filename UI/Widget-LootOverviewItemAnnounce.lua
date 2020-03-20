@@ -39,9 +39,9 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         local fontFace = button.label:GetFont()
         button:SetFont(fontFace, 15)
         button.highlight:SetColorTexture(1, 1, 1, 0.1)
-        button:SetText(("|c%s%s|r (%s) %s (for %d GP), rating %d"):format(classColor, player.name, player.rank, (message or "roll"), GP, PR))
+        button:SetText(("|c%s%s|r (%s) %s (for %d GP), rating %.2f"):format(classColor, player.name, player.rank, (message or "roll"), GP, PR))
         button:SetCallback("OnClick", function() giveItemTo(player.name, GP) end)
-        button:SetUserData("data", {name = player.name, message = message, GP = GP, PR = PR})
+        button:SetUserData("data", { name = player.name, message = message, GP = GP, PR = PR })
         widget:AddChild(button)
 
         -- resort list of bidders (widget children) in place

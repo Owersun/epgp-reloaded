@@ -10,7 +10,7 @@ end
 -- Adjust player GP value
 -- Save history row for the event
 function EPGPR:ItemDistributed(player, itemLink, GP)
-    if GP and GP > 0 then EPGPR:GuildChangeMemberEPGP(player, nil, GP) end
+    if GP and GP > 0 then EPGPR:GuildChangeMemberEPGP(player, nil, GP, true) end
     self:ChatItemDistributed(player, itemLink, GP)
     self:SaveHistoryRow(player, itemLink, nil, GP)
 end
@@ -43,7 +43,7 @@ function EPGPR:StandbyAdd(name)
     local standbyList = self.config.standby.list or {}
     if standbyList[name] then SendChatMessage("You are already in the standby list", "WHISPER", nil, name); return; end
     standbyList[name] = true
-    self:ConfigSet({standby = { list = standbyList }})
+    self:ConfigSet({ standby = { list = standbyList }})
     SendChatMessage("You have been added to the standby list", "WHISPER", nil, name)
 end
 
@@ -73,10 +73,10 @@ function EPGPR:GetBidderProperties(name)
     for i = 1, MAX_RAID_MEMBERS do
         local playerName, _, _, _, _, playerClass = GetRaidRosterInfo(i);
         if playerName == name then
-            -- fetch the guild member
-            local _, playerRank, _, _, _, playerPR = EPGPR:GuildGetMemberInfo(name)
+            -- fetch the guild member, considering alts
+            local _, _, playerRank, _, _, _, playerPR = EPGPR:GuildGetMemberInfo(name, true)
             -- return the information immideately, where "rank" and "PR" are going to be empty if the player is not part of the guild
-            return {name = playerName, rank = playerRank or "?", class = playerClass or "?", PR = playerPR or 0} -- bail out as soon as possible
+            return { name = name, rank = playerRank or "?", class = playerClass or "?", PR = playerPR or 0 } -- bail out as soon as possible
         end
     end
     return nil
@@ -84,10 +84,10 @@ end
 
 -- Set connection alt-main
 function EPGPR:SetAlt(alt, main)
-    local altList = EPGPR.config.alts.list
-    EPGPR:ConfigSet({alts = { list = false }})
+    local altList = EPGPR.config.alts.list or {}
+    EPGPR:ConfigSet({ alts = { list = false }})
     altList[alt] = main
-    EPGPR:ConfigSet({alts = { list = altList}})
+    EPGPR:ConfigSet({ alts = { list = altList }})
 end
 
 -- recursively merge b to a

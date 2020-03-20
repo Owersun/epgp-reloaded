@@ -3,13 +3,21 @@ local LootOverviewItem, AceGUI, GetMasterLootCandidate = EPGPR.UI.LootOverviewIt
 -- Current item announce data. slotId - current announcement, name - to whom we confirmed it to be given after announcement, and GP - for how much
 local _announcing = {}
 
+-- adjust announce window height when content changes
+local function recalculateWindowHeight(widget)
+    widget:DoLayout()
+    local childrenHeight = 0
+    for _, n in ipairs(widget.children) do childrenHeight = childrenHeight + n.content:GetHeight() end
+    widget:SetHeight(childrenHeight + 57)
+end
+
 -- Refill the form with given items and show it
 local function showItems(widget, _, items)
     widget:ReleaseChildren()
     for slotId, item in pairs(items) do
         widget:AddChild(LootOverviewItem(slotId, item))
     end
-    widget:DoLayout()
+    recalculateWindowHeight(widget)
     widget:Show()
 end
 
@@ -44,7 +52,7 @@ local function clearSlot(widget, _, slotId, item)
     -- in case all loot is gone, then close
     if #widget.children == 0 then widget:Hide()
     -- otherwise redraw
-    else widget:DoLayout() end
+    else recalculateWindowHeight(widget) end
 end
 
 -- Start/Stop announcement of loot in slot
@@ -56,7 +64,7 @@ local function announceSlot(widget, _, slotId)
     _announcing.slotId = slotId
     -- Signal all slots that announcement has been started/stopped for slotId
     for _, child in ipairs(widget.children) do child:Fire(message, aboutSlotId) end
-    widget:DoLayout()
+    recalculateWindowHeight(widget)
 end
 
 -- Someone bid to the current announcement
@@ -69,7 +77,7 @@ local function bid(widget, _, name, message, roll)
             -- Pass the bid to the slot currently in announcement
             if child:GetUserData("slotId") == _announcing.slotId then
                 child:Fire("Bid", player, message, roll)
-                widget:DoLayout()
+                recalculateWindowHeight(widget)
                 break
             end
         end end
@@ -108,8 +116,7 @@ EPGPR.UI.LootOverview = function()
 
     local LootOverview = AceGUI:Create("Window")
     LootOverview:Hide()
-    LootOverview.frame:SetMinResize(400, 100)
-    LootOverview:SetAutoAdjustHeight(true)
+    LootOverview:EnableResize(false)
     LootOverview:SetWidth(400)
     LootOverview:SetLayout("List")
     LootOverview:SetTitle("Loot Overview")

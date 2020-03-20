@@ -65,28 +65,34 @@ end
 
 -- Refresh guild member in local state and return his data
 -- Get player info by name
-function EPGPR:GuildGetMemberInfo(name)
+function EPGPR:GuildGetMemberInfo(name, considerAlts)
+    if considerAlts then
+        -- look in the alts list
+        local alts = EPGPR.config.alts.list or {}
+        local altOf = alts[name]
+        name = altOf and altOf or name
+    end
     -- Refresh guildmember info to the most recent state
     if self.State.guildRoster[name] then
         local playerName, playerData = guildFetchMember(self.State.guildRoster[name][1])
         if name == playerName then
-            self.State.guildRoster[name] = playerData
-            return unpack(playerData)
+            self.State.guildRoster[playerName] = playerData
+            return playerName, unpack(playerData)
         end
     end
     return nil
 end
 
 -- Change guild member EP/GP values
-function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP)
-    local i, _, _, oldEP, oldGP, _ = self:GuildGetMemberInfo(name)
+function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
+    local playerName, i, _, _, oldEP, oldGP, _ = self:GuildGetMemberInfo(name, considerAlts)
     if not i then return end -- guild member not found
     local newEP = floor(max(0, oldEP + tonumber(diffEP or 0)))
     local newGP = floor(max(self.config.GP.basegp, oldGP + tonumber(diffGP or 0)))
     if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
-    self:Print(name  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
+    self:Print(playerName  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
     -- refresh member
-    self:GuildGetMemberInfo(name)
+    self:GuildGetMemberInfo(playerName)
 end
 
 -- Decay guild EP/GP by percentage
@@ -107,8 +113,9 @@ end
 -- names has to be in the fomr "{[name1] = ratioN, [name2] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
     massGuildUpdate(function()
+        -- @TODO Here filtering for alts-main must go, as the list coming from the outside could have several alts of the same main and inflate his EP with duplicates
         for name, ratio in pairs(names) do
-            EPGPR:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil)
+            EPGPR:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)
         end
     end)
 end
