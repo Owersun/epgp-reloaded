@@ -113,8 +113,17 @@ end
 -- names has to be in the fomr "{[name1] = ratioN, [name2] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
     massGuildUpdate(function()
-        -- @TODO Here filtering for alts-main must go, as the list coming from the outside could have several alts of the same main and inflate his EP with duplicates
+        -- filter out all alts on the list and converge their EPRating to their mains
+        local alts = EPGPR.config.alts.list or {}
+        for alt, main in pairs(alts) do -- iterate through alts table
+            if names[alt] then -- if there is alt in the list
+                names[main] = math.max(names[main] or 0, names[alt]) -- assign biggest EPRatio between alt and main to the main
+                names[alt] = nil -- remove the alt from the list
+            end
+        end
+        -- change all people in the list EP by the ratio
         for name, ratio in pairs(names) do
+            -- we don't need to consider alts here as they are already replaced by their mains
             EPGPR:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)
         end
     end)
