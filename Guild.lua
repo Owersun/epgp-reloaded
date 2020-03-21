@@ -104,7 +104,7 @@ end
 function EPGPR:GuildChangeEPGP(percent)
     massGuildUpdate(function()
         local basegp = EPGPR.config.GP.basegp
-        for _, member in pairs(EPGPR.state.guildRoster) do
+        for _, member in pairs(self.State.guildRoster) do
             local i, _, _, oldEP, oldGP, _ = unpack(member)
             local newEP = floor(max(0, oldEP * (100 + percent) / 100))
             local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
