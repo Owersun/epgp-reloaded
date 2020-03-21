@@ -3,9 +3,8 @@ local EPGPR, RAID_CLASS_COLORS, AceGUI = EPGPR, RAID_CLASS_COLORS, EPGPR.Libs.Ac
 -- Compare function to sort widget children based on their GPRatio and PR
 local function sortFunc(widgetA, widgetB)
     local dataA, dataB = widgetA:GetUserData("data"), widgetB:GetUserData("data")
-    -- first sort by GP bidder want to take the item (effectively his priority on the item),
-    -- second by bidder priority rating
-    return dataA.GP ~= dataB.GP and dataA.GP > dataB.GP or dataA.PR > dataB.PR
+    -- first sort by GP bidder want to take the item (effectively his priority on the item), second by bidder priority rating
+    if dataA.GP ~= dataB.GP then return dataA.GP > dataB.GP else return dataA.PR > dataB.PR end
 end
 
 -- Item announce form that gathers all bids on the item and shows them as rows/buttons

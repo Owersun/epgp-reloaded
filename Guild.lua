@@ -89,10 +89,13 @@ function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     if not i then return end -- guild member not found
     local newEP = floor(max(0, oldEP + tonumber(diffEP or 0)))
     local newGP = floor(max(self.config.GP.basegp, oldGP + tonumber(diffGP or 0)))
-    if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
-    self:Print(playerName  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
-    -- refresh member
-    self:GuildGetMemberInfo(playerName)
+    if newEP ~= oldEP or newGP ~= oldGP then
+        -- change values
+        GuildRosterSetOfficerNote(i, newEP .. "," .. newGP)
+        self:Print(playerName  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
+        -- refresh member
+        self:GuildGetMemberInfo(playerName)
+    end
 end
 
 -- Decay guild EP/GP by percentage
