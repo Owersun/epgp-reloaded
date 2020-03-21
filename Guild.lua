@@ -111,7 +111,7 @@ function EPGPR:GuildChangeEPGP(percent)
             if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
         end
         EPGPR:ChatGuildEPGPChanged(percent)
-        EPGPR:SaveHistoryRow("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
+        EPGPR:AddHistory("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
     end)
 end
 

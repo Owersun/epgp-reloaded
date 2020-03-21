@@ -12,7 +12,7 @@ end
 function EPGPR:ItemDistributed(player, itemLink, GP)
     if GP and GP > 0 then EPGPR:GuildChangeMemberEPGP(player, nil, GP, true) end
     self:ChatItemDistributed(player, itemLink, GP)
-    self:SaveHistoryRow(player, itemLink, nil, GP)
+    self:AddHistory(player, itemLink, nil, GP)
 end
 
 -- Encounter has been won
@@ -34,7 +34,7 @@ function EPGPR:EncounterWon(encounterId)
         end
         self:GuildAddEP(names, encounter.EP)
         self:ChatEncounterEPAwarded(encounter.name, encounter.EP)
-        self:SaveHistoryRow("RAID", encounter.name, encounter.EP, nil)
+        self:AddHistory("RAID", encounter.name, encounter.EP, nil)
     end
 end
 
@@ -47,20 +47,16 @@ function EPGPR:StandbyAdd(name)
     SendChatMessage("You have been added to the standby list", "WHISPER", nil, name)
 end
 
--- Check that anyone from standby list has joined the raid and should go out of it
--- @Not used
-function EPGPR:CheckStandbyList()
-    local standbyList = self.config.standby.list or {}
-    for i = 1, MAX_RAID_MEMBERS do
-        local raidName = GetRaidRosterInfo(i)
-        if raidName then standbyList[raidName] = nil end
-    end
-    self.config.standby.list = standbyList
+-- Add history record and broadcast too all other apps in the guild
+function EPGPR:AddHistory(targetPlayer, comment, EP, GP)
+    local author, time = UnitName("player"), time()
+    self:SaveHistoryRow(author, targetPlayer, comment, EP, GP, time)
+    self:Broadcast("SaveHistoryRow", { author, targetPlayer, comment, EP, GP, time })
 end
 
 -- Add a row into persistent history table
-function EPGPR:SaveHistoryRow(targetPlayer, comment, EP, GP)
-    table.insert(EPGPRHISTORY, { UnitName("player"), targetPlayer, comment, EP, GP, time() })
+function EPGPR:SaveHistoryRow(author, targetPlayer, comment, EP, GP, time)
+    table.insert(EPGPRHISTORY, { author, targetPlayer, comment, EP, GP, time })
 end
 
 -- When a bid has been placed by a player name, there are many things to take in account and return:
