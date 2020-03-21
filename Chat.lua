@@ -22,3 +22,8 @@ end
 function EPGPR:ChatBidPlaced(name, message, PR)
     SendChatMessage(name .. " (" .. message .. "), priority " .. PR, "RAID")
 end
+
+-- When Guild EPGP is changed by percent
+function EPGPR:ChatGuildEPGPChanged(percent)
+    SendChatMessage(("Guild EPGP changed by %d percent"):format(percent), "GUILD")
+end

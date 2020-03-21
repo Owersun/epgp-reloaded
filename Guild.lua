@@ -64,7 +64,6 @@ function EPGPR:GuildRefreshRoster()
 end
 
 -- Refresh guild member in local state and return his data
--- Get player info by name
 function EPGPR:GuildGetMemberInfo(name, considerAlts)
     if considerAlts then
         -- look in the alts list
@@ -75,18 +74,21 @@ function EPGPR:GuildGetMemberInfo(name, considerAlts)
     -- Refresh guildmember info to the most recent state
     if self.State.guildRoster[name] then
         local playerName, playerData = guildFetchMember(self.State.guildRoster[name][1])
-        if name == playerName then
-            self.State.guildRoster[playerName] = playerData
-            return playerName, unpack(playerData)
-        end
+        if name == playerName then self.State.guildRoster[name] = playerData end
+        local i, playerRank, playerClass, EP, GP, PR = unpack(self.State.guildRoster[name])
+        -- we're going to return either fresh data of the player, or our cache data by the name, with i being null in that case,
+        -- indicating that the player data is stale and must not be changed by index in this case.
+        -- this allows showing data in most cases of viewing forms and bidding, and prevent wrong writes (with silent fails)
+        return name, name == playerName and i or nil, playerRank, playerClass, EP, GP, PR
     end
-    return nil
+    -- no guild member by that name found at all
+    return name, nil, "?", "?", 0, 0, 0
 end
 
 -- Change guild member EP/GP values
 function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     local playerName, i, _, _, oldEP, oldGP, _ = self:GuildGetMemberInfo(name, considerAlts)
-    if not i then return end -- guild member not found
+    if not i then return end -- guild member index cannot be determined properly
     local newEP = floor(max(0, oldEP + tonumber(diffEP or 0)))
     local newGP = floor(max(self.config.GP.basegp, oldGP + tonumber(diffGP or 0)))
     if newEP ~= oldEP or newGP ~= oldGP then
@@ -99,16 +101,17 @@ function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
 end
 
 -- Decay guild EP/GP by percentage
-function EPGPR:GuildDecayEPGP(percent)
+function EPGPR:GuildChangeEPGP(percent)
     massGuildUpdate(function()
         local basegp = EPGPR.config.GP.basegp
         for _, member in pairs(EPGPR.state.guildRoster) do
             local i, _, _, oldEP, oldGP, _ = unpack(member)
-            local newEP = floor(max(0, oldEP * (100 - percent) / 100))
-            local newGP = floor(max(basegp, oldGP * (100 - percent) / 100))
+            local newEP = floor(max(0, oldEP * (100 + percent) / 100))
+            local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
             if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
         end
-        EPGPR:SaveHistoryRow("GUILD", "Guild EPGP change " .. (-1 * percent) .. "%", nil, nil)
+        EPGPR:ChatGuildEPGPChanged(percent)
+        EPGPR:SaveHistoryRow("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
     end)
 end
 

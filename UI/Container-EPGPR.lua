@@ -41,7 +41,7 @@ local function tabStandby(container)
             standbyList[name] = nil
             EPGPR:ConfigSet({ standby = { list = standbyList }})
         end)
-        l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
+        l:SetText(("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
         standby:AddChild(l)
     end
     container:AddChild(standby)
