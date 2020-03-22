@@ -28,7 +28,7 @@ local function tabStandby(container)
 
     local standby = AceGUI:Create("ScrollFrame")
     standby:SetFullWidth(true)
-    standby:SetHeight(100)
+    standby:SetHeight(80)
     standby:SetLayout("List")
     local standbyList = EPGPR.config.standby.list or {}
     for name, _ in pairs(standbyList) do
@@ -48,18 +48,25 @@ local function tabStandby(container)
 
     local alts = AceGUI:Create("ScrollFrame")
     alts:SetFullWidth(true)
-    alts:SetHeight(100)
+    alts:SetHeight(80)
     alts:SetLayout("List")
-    local altsList = EPGPR.config.alts.list or {}
-    for alt, main in pairs(altsList) do
-        local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
-        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        local l = AceGUI:Create("InteractiveLabel")
-        l:SetFullWidth(true)
-        l:SetCallback("OnClick", function() EPGPR:SetAlt(alt, nil) end) -- remove alt on click
-        l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
-        alts:AddChild(l)
+    local function refreshAltsList()
+        alts:ReleaseChildren()
+        local altsList = EPGPR.config.alts.list or {}
+        for alt, main in pairs(altsList) do
+            local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
+            local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+            local l = AceGUI:Create("InteractiveLabel")
+            l:SetFullWidth(true)
+            l:SetCallback("OnClick", function()
+                EPGPR:SetAlt(alt, nil)
+                refreshAltsList()
+            end) -- remove alt on click
+            l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
+            alts:AddChild(l)
+        end
     end
+    refreshAltsList()
     container:AddChild(alts)
 
     local addAlt = AceGUI:Create("SimpleGroup")
@@ -77,7 +84,14 @@ local function tabStandby(container)
     local ok = AceGUI:Create("Button")
     ok:SetText("add alt")
     ok:SetRelativeWidth(0.3)
-    ok:SetCallback("OnClick", function() EPGPR:SetAlt(a:GetText(), b:GetText()) end)
+    ok:SetCallback("OnClick", function()
+        -- on success clear the fields and refresh the form
+        if EPGPR:SetAlt(a:GetText(), b:GetText()) then
+            a:SetText()
+            b:SetText()
+            refreshAltsList()
+        end
+    end)
     addAlt:AddChild(ok)
     container:AddChild(addAlt)
 end
@@ -100,7 +114,7 @@ EPGPR.UI.EPGPR = function()
     window:SetTitle("EPGP Reloaded")
     window:SetLayout("Flow")
     window:SetWidth(300)
-    window:SetHeight(300)
+    window:SetHeight(400)
 
     -- Add tabs to the container
     local tabGroup = AceGUI:Create("TabGroup");

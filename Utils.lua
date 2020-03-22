@@ -81,9 +81,12 @@ end
 -- Set connection alt-main
 function EPGPR:SetAlt(alt, main)
     local altList = EPGPR.config.alts.list or {}
+    -- main must be member of the guild
+    if main and not self.State.guildRoster[main] then return false end
     EPGPR:ConfigSet({ alts = { list = false }})
     altList[alt] = main
     EPGPR:ConfigSet({ alts = { list = altList }})
+    return true
 end
 
 -- recursively merge b to a

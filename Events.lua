@@ -88,7 +88,8 @@ function EPGPR:CHAT_MSG_SYSTEM(_, message)
 end
 
 -- Pick up messages we are interested in from whispers
-function EPGPR:CHAT_MSG_WHISPER(_, message, _, _, _, name)
+function EPGPR:CHAT_MSG_WHISPER(_, input, _, _, _, name)
+    local message = input:lower()
     if self.config.bidding.messages[message] then EPGPR:UILootOverview():Fire("Bid", name, message, nil) end
     if self.config.standby.whisper == message then EPGPR:StandbyAdd(name) end
 end
