@@ -130,6 +130,7 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
 
     -- save our slotId in userdata
     container:SetUserData("slotId", slotId)
+    container:SetUserData("item", item)
 
     -- callbacks
     container:SetCallback("AnnounceStart", announceStart)

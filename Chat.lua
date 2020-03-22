@@ -1,8 +1,8 @@
-local EPGPR, SendChatMessage, UnitName = EPGPR, SendChatMessage, UnitName
+local EPGPR, SendChatMessage = EPGPR, SendChatMessage
 
 -- When loot is being announced
 function EPGPR:ChatAnnounceLoot(itemLink, GP)
-    SendChatMessage(itemLink .. " " .. tostring(GP) .. " GP", "RAID_WARNING");
+    SendChatMessage(("%s %d GP"):format(itemLink, GP), "RAID_WARNING");
     SendChatMessage("whisper '!need' for main spec", "RAID")
     SendChatMessage("whisper '!off' for off spec", "RAID")
     SendChatMessage("/roll for Donyshko spec", "RAID")
@@ -26,4 +26,11 @@ end
 -- When Guild EPGP is changed by percent
 function EPGPR:ChatGuildEPGPChanged(percent)
     SendChatMessage(("Guild EPGP changed by %d percent"):format(percent), "GUILD")
+end
+
+-- List items in the given list to raid chat
+function EPGPR:ChatListLoot(items)
+    for _, item in ipairs(items) do
+        SendChatMessage(("%s %d GP"):format(item.link, item.GP), "RAID")
+    end
 end
