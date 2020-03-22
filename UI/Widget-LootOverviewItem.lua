@@ -1,4 +1,4 @@
-local EPGPR, LootOverviewItemAnnouncement, AceGUI = EPGPR, EPGPR.UI.LootOverviewItemAnnounce, EPGPR.Libs.AceGUI
+local EPGPR, LootOverviewItemAnnouncement, GameTooltip, AceGUI = EPGPR, EPGPR.UI.LootOverviewItemAnnounce, GameTooltip, EPGPR.Libs.AceGUI
 
 -- LootOverviewItem factory that produce item rows for LootOverview
 EPGPR.UI.LootOverviewItem = function(slotId, item)
@@ -13,19 +13,25 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
     local LootOverviewItem = AceGUI:Create("SimpleGroup")
     LootOverviewItem:SetFullWidth(true)
     LootOverviewItem:SetHeight(40)
-    -- LootOverviewItem:SetHeight(50)
     LootOverviewItem:SetLayout("Flow")
     container:AddChild(LootOverviewItem)
 
-    local label = AceGUI:Create("Label")
+    local label = AceGUI:Create("InteractiveLabel")
     label:SetImage(item.image)
     label:SetImageSize(40, 40)
     label:SetText(item.link)
-    label.frame:SetMinResize(250, 40)
     label:SetWidth(250)
     label:SetHeight(40)
     label:SetJustifyH("LEFT")
     label:SetJustifyV("MIDDLE")
+    label:SetCallback("OnEnter", function(widget)
+        GameTooltip:SetOwner(widget.frame, "ANCHOR_CURSOR")
+        GameTooltip:SetHyperlink(item.link)
+        GameTooltip:Show()
+    end)
+    label:SetCallback("OnLeave", function()
+        GameTooltip:Hide()
+    end)
     LootOverviewItem:AddChild(label)
 
     -- button is going to send this message on click (used to change button behaviour without creating new buttons)
