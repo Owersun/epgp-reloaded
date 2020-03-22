@@ -1,9 +1,4 @@
-local EPGPR = EPGPR
-
-EPGPR.Messages = {
-    ENCOUNTERWON = 1,
-    ITEMDISTRIBUTED = 2,
-}
+local EPGPR, UnitName = EPGPR, UnitName
 
 -- When a message is received, try to call the method with arguments
 function EPGPR:OnCommReceived(prefix, message, _, sender)
