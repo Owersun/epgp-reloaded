@@ -9,8 +9,9 @@ end
 
 -- return message decorated with wow color brakets depending on GPRatio. Full GPRatio of 1 is going to have color of epic item, which is 4 in color list
 local function paintBidMessage(message, GPRatio)
-    local color = ITEM_QUALITY_COLORS[math.floor(GPRatio * 4)] or 'ffffffff'
-    return "|c" .. color .. message .. "|r"
+    local i = math.floor(GPRatio * 4)
+    local color = ITEM_QUALITY_COLORS[i] and ITEM_QUALITY_COLORS[i].hex or '|cffffffff'
+    return color .. message .. "|r"
 end
 
 -- Item announce form that gathers all bids on the item and shows them as rows/buttons
@@ -53,7 +54,7 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         -- resort list of bidders (widget children) in place
         table.sort(widget.children, sortFunc)
         widget:DoLayout()
-        EPGPR:ChatBidPlaced(player.name, coloredMessage, PR)
+        EPGPR:ChatBidPlaced(player.name, message, PR)
     end
 
     LootOverviewItemAnnounce:SetCallback("Bid", bid)
