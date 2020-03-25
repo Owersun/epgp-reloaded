@@ -1,16 +1,18 @@
 local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
 
 local function tabStangings(container)
+    container:SetLayout("Fill")
+
     local l = AceGUI:Create("Label")
-    l:SetText(tab)
+    l:SetText("Standings")
     l:SetFullWidth(true)
     container:AddChild(l)
 end
 
 local function tabRaid(container)
+    container:SetLayout("Fill")
+
     local scroll = AceGUI:Create("ScrollFrame")
-    scroll:SetFullWidth(true)
-    scroll:SetFullHeight(true)
     scroll:SetLayout("List")
     EPGPR:GuildRefreshRoster()
     for name, data in pairs(EPGPR.State.guildRoster) do
@@ -25,6 +27,7 @@ local function tabRaid(container)
 end
 
 local function tabStandby(container)
+    container:SetLayout("List")
 
     local standby = AceGUI:Create("ScrollFrame")
     standby:SetFullWidth(true)
@@ -96,14 +99,30 @@ local function tabStandby(container)
     container:AddChild(addAlt)
 end
 
+local function tabExport(container)
+    EPGPR:GuildRefreshRoster()
+    container:SetLayout("Fill")
+    local scroll = AceGUI:Create("ScrollFrame")
+    scroll:SetLayout("Fill")
+    local box = AceGUI:Create("EditBox")
+    box:DisableButton(true)
+    box.editbox:SetMultiLine(true)
+    local roster = {}
+    for name, player in pairs(EPGPR.State.guildRoster) do
+        roster[player[1]] = '["' .. name .. '","' .. player[2] .. '","' .. player[3] .. '",' .. player[4] .. ',' .. player[5] .. ',' .. player[6] .. ']'
+    end
+    local json = '[' .. table.concat(roster, ',') .. ']'
+    box:SetText(json)
+    scroll:AddChild(box)
+    container:AddChild(scroll)
+end
+
 local function selectTab(container, event, tab)
     container:ReleaseChildren()
-    local content = AceGUI:Create("SimpleGroup")
-    content:SetLayout("Flow")
-    container:AddChild(content)
-    if tab == "Standings" then tabStangings(content)
-    elseif tab == "Raid" then tabRaid(content)
-    elseif tab == "Standby" then tabStandby(content)
+    if tab == "Standings" then tabStangings(container)
+    elseif tab == "Raid" then tabRaid(container)
+    elseif tab == "Standby" then tabStandby(container)
+    elseif tab == "Export" then tabExport(container)
     end
 end
 
@@ -124,7 +143,8 @@ EPGPR.UI.EPGPR = function()
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
     local tab3 = { text = "Standby", value = "Standby" }
-    tabGroup:SetTabs({ tab1, tab2, tab3 })
+    local tab4 = { text = "Export", value = "Export" }
+    tabGroup:SetTabs({ tab1, tab2, tab3, tab4 })
     tabGroup:SetCallback("OnGroupSelected", selectTab)
     tabGroup:SelectTab("Standings")
     window:AddChild(tabGroup)
