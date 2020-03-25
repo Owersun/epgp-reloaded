@@ -34,11 +34,12 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         end
 
         -- calculate bidder properties
+        local stringMessage = message or 'roll'
         local PR = message and (player.PR or 0) or roll -- bidder PR
         local GPRatio = message and config.messages[message] or (config.rollRatio or 1) -- GP ratio by which GP is going to be reduced for this bidder, e.g. 1/0.5/0.2/etc.
         local GP = math.floor(GPRatio * itemGP) -- actual GP, bidder is going to get this item for
         local classColor = RAID_CLASS_COLORS[player.class] and RAID_CLASS_COLORS[player.class].colorStr or 'ffffffff' -- bidder class color
-        local coloredMessage = paintBidMessage(message or "roll", GPRatio)
+        local coloredMessage = paintBidMessage(stringMessage, GPRatio)
 
         -- add another bidder to the list of bidders
         local button = AceGUI:Create("InteractiveLabel")
@@ -54,7 +55,7 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         -- resort list of bidders (widget children) in place
         table.sort(widget.children, sortFunc)
         widget:DoLayout()
-        EPGPR:ChatBidPlaced(player.name, message, PR)
+        EPGPR:ChatBidPlaced(player.name, stringMessage, PR)
     end
 
     LootOverviewItemAnnounce:SetCallback("Bid", bid)

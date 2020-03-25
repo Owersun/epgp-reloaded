@@ -20,7 +20,7 @@ end
 
 -- When a bit has been placed on an item
 function EPGPR:ChatBidPlaced(name, message, PR)
-    SendChatMessage(name .. " (" .. message .. "), priority " .. PR, "RAID")
+    SendChatMessage(("%s (%s), %.2f PR"):format(name, message, PR), "RAID")
 end
 
 -- When Guild EPGP is changed by percent
