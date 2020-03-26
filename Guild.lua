@@ -102,8 +102,9 @@ end
 
 -- Decay guild EP/GP by percentage
 function EPGPR:GuildChangeEPGP(percent)
-    if (tostring(tonumber(percent)) ~= percent) then
-        EPGPR:Print("ChangeEPGP " .. tostring(percent) .. " percent is not a number")
+    local change = tonumber(percent)
+    if (tostring(change) ~= tostring(percent)) then
+        EPGPR:Print("GuildChangeEPGP " .. tostring(percent) .. " percent is not a number")
         return
     end
     massGuildUpdate(function()
