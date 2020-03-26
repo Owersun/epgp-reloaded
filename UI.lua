@@ -55,3 +55,28 @@ StaticPopupDialogs["EPGPR_GIVE_LOOT_POPUP"] = {
     hideOnEscape = true,
     preferredIndex = 3,
 }
+
+StaticPopupDialogs["EPGPR_CHANGE_GUILD_EPGP_POPUP"] = {
+    text = "Change Guild EPGP by percent (negative deflate, positive inflate)",
+    button1 = "Change",
+    button2 = "Cancel",
+    OnShow = function (self, data)
+        self.editBox:SetText("0")
+    end,
+    OnAccept = function(self)
+        EPGPR:GuildChangeEPGP(self.editbox:GetText())
+    end,
+    EditBoxOnTextChanged = function (self, data) -- careful! 'self' here points to the editbox, not the dialog
+        local text = self:GetText()
+        if (tostring(tonumber(text)) == text) then
+            self:GetParent().button1:Enable()
+        else
+            self:GetParent().button1:Disable()
+        end
+    end,
+    hasEditBox = true,
+    timeout = 0,
+    whileDead = false,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}

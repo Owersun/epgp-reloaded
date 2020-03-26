@@ -1,6 +1,34 @@
 local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
 
 local function tabStangings(container)
+    container:SetLayout("List")
+
+    EPGPR:GuildRefreshRoster()
+    local scroll = AceGUI:Create("ScrollFrame")
+    scroll:SetFullWidth(true)
+    scroll:SetHeight(280)
+    scroll:SetLayout("List")
+    for name, data in pairs(EPGPR.State.guildRoster) do
+        local _, playerRank, playerClass, EP, GP, PR = unpack(data)
+        if PR ~= 0 then
+            local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+            local l = AceGUI:Create("Label")
+            l:SetFullWidth(true)
+            l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
+            scroll:AddChild(l)
+        end
+    end
+    container:AddChild(scroll)
+
+    local changeGuildEPGP = AceGUI:Create("Button")
+    changeGuildEPGP:SetText("Change Guild EPGP")
+    changeGuildEPGP:SetCallback("OnClick", function()
+        StaticPopup_Show("EPGPR_CHANGE_GUILD_EPGP_POPUP")
+    end)
+    container:AddChild(changeGuildEPGP)
+end
+
+local function tabRaid(container)
     container:SetLayout("Fill")
 
     local l = AceGUI:Create("Label")
@@ -9,26 +37,10 @@ local function tabStangings(container)
     container:AddChild(l)
 end
 
-local function tabRaid(container)
-    container:SetLayout("Fill")
-
-    local scroll = AceGUI:Create("ScrollFrame")
-    scroll:SetLayout("List")
-    EPGPR:GuildRefreshRoster()
-    for name, data in pairs(EPGPR.State.guildRoster) do
-        local _, playerRank, playerClass, EP, GP, PR = unpack(data)
-        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        local l = AceGUI:Create("Label")
-        l:SetFullWidth(true)
-        l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
-        scroll:AddChild(l)
-    end
-    container:AddChild(scroll)
-end
-
 local function tabStandby(container)
     container:SetLayout("List")
 
+    EPGPR:GuildRefreshRoster()
     local standby = AceGUI:Create("ScrollFrame")
     standby:SetFullWidth(true)
     standby:SetHeight(80)
@@ -79,11 +91,9 @@ local function tabStandby(container)
     local a = AceGUI:Create("EditBox")
     a:SetRelativeWidth(0.3)
     a:DisableButton(true)
-    addAlt:AddChild(a)
     local b = AceGUI:Create("EditBox")
     b:SetRelativeWidth(0.3)
     b:DisableButton(true)
-    addAlt:AddChild(b)
     local ok = AceGUI:Create("Button")
     ok:SetText("add alt")
     ok:SetRelativeWidth(0.3)
@@ -95,26 +105,30 @@ local function tabStandby(container)
             refreshAltsList()
         end
     end)
+    addAlt:AddChild(a)
+    addAlt:AddChild(b)
     addAlt:AddChild(ok)
     container:AddChild(addAlt)
 end
 
 local function tabExport(container)
-    EPGPR:GuildRefreshRoster()
     container:SetLayout("Fill")
+
+    EPGPR:GuildRefreshRoster()
     local scroll = AceGUI:Create("ScrollFrame")
     scroll:SetLayout("Fill")
     local box = AceGUI:Create("EditBox")
     box:DisableButton(true)
     box.editbox:SetMultiLine(true)
+    scroll:AddChild(box)
+    container:AddChild(scroll)
+
     local roster = {}
     for name, player in pairs(EPGPR.State.guildRoster) do
         roster[player[1]] = '["' .. name .. '","' .. player[2] .. '","' .. player[3] .. '",' .. player[4] .. ',' .. player[5] .. ',' .. player[6] .. ']'
     end
     local json = '[' .. table.concat(roster, ',') .. ']'
     box:SetText(json)
-    scroll:AddChild(box)
-    container:AddChild(scroll)
 end
 
 local function selectTab(container, event, tab)
