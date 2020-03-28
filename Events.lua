@@ -62,7 +62,7 @@ end
 
 -- Performed at an encounter (boss fight) finish
 function EPGPR:ENCOUNTER_END(_, encounterId, _, _, _, success)
-    if success then EPGPR:EncounterWon(encounterId) end
+    if success == 1 then EPGPR:EncounterWon(encounterId) end
 end
 
 -- Update our internal state of guild roster
