@@ -4,9 +4,11 @@ local function tabStangings(container)
     container:SetLayout("List")
 
     EPGPR:GuildRefreshRoster()
+    local group = AceGUI:Create("SimpleGroup")
+    group:SetLayout("Fill")
+    group:SetFullWidth(true)
+    group:SetHeight(280)
     local scroll = AceGUI:Create("ScrollFrame")
-    scroll:SetFullWidth(true)
-    scroll:SetHeight(280)
     scroll:SetLayout("List")
     for name, data in pairs(EPGPR.State.guildRoster) do
         local _, playerRank, playerClass, EP, GP, PR = unpack(data)
@@ -18,7 +20,8 @@ local function tabStangings(container)
             scroll:AddChild(l)
         end
     end
-    container:AddChild(scroll)
+    group:AddChild(scroll)
+    container:AddChild(group)
 
     local changeGuildEPGP = AceGUI:Create("Button")
     changeGuildEPGP:SetText("Change Guild EPGP")
@@ -32,7 +35,7 @@ local function tabRaid(container)
     container:SetLayout("Fill")
 
     local l = AceGUI:Create("Label")
-    l:SetText("Standings")
+    l:SetText("Raid")
     l:SetFullWidth(true)
     container:AddChild(l)
 end
@@ -41,9 +44,11 @@ local function tabStandby(container)
     container:SetLayout("List")
 
     EPGPR:GuildRefreshRoster()
+    local standbyGroup = AceGUI:Create("SimpleGroup")
+    standbyGroup:SetLayout("Fill")
+    standbyGroup:SetFullWidth(true)
+    standbyGroup:SetHeight(140)
     local standby = AceGUI:Create("ScrollFrame")
-    standby:SetFullWidth(true)
-    standby:SetHeight(80)
     standby:SetLayout("List")
     local standbyList = EPGPR.config.standby.list or {}
     for name, _ in pairs(standbyList) do
@@ -59,11 +64,14 @@ local function tabStandby(container)
         l:SetText(("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
         standby:AddChild(l)
     end
-    container:AddChild(standby)
+    standbyGroup:AddChild(standby)
+    container:AddChild(standbyGroup)
 
+    local altsGroup = AceGUI:Create("SimpleGroup")
+    altsGroup:SetLayout("Fill")
+    altsGroup:SetFullWidth(true)
+    altsGroup:SetHeight(140)
     local alts = AceGUI:Create("ScrollFrame")
-    alts:SetFullWidth(true)
-    alts:SetHeight(80)
     alts:SetLayout("List")
     local function refreshAltsList()
         alts:ReleaseChildren()
@@ -81,8 +89,9 @@ local function tabStandby(container)
             alts:AddChild(l)
         end
     end
+    altsGroup:AddChild(alts)
     refreshAltsList()
-    container:AddChild(alts)
+    container:AddChild(altsGroup)
 
     local addAlt = AceGUI:Create("SimpleGroup")
     addAlt:SetLayout("Flow")
@@ -115,13 +124,16 @@ local function tabExport(container)
     container:SetLayout("Fill")
 
     EPGPR:GuildRefreshRoster()
+    local exportGroup = AceGUI:Create("SimpleGroup")
+    exportGroup:SetLayout("Fill")
     local scroll = AceGUI:Create("ScrollFrame")
     scroll:SetLayout("Fill")
     local box = AceGUI:Create("EditBox")
     box:DisableButton(true)
     box.editbox:SetMultiLine(true)
     scroll:AddChild(box)
-    container:AddChild(scroll)
+    exportGroup:AddChild(scroll)
+    container:AddChild(exportGroup)
 
     local roster = {}
     for name, player in pairs(EPGPR.State.guildRoster) do
