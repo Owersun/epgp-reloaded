@@ -19,8 +19,12 @@ function EPGPR:ChatItemDistributed(name, itemLink, GP)
 end
 
 -- When a bit has been placed on an item
-function EPGPR:ChatBidPlaced(name, message, PR)
-    SendChatMessage(("%s (%s), %.2f PR"):format(name, message, PR), "RAID")
+function EPGPR:ChatBidPlaced(name, message, EP, GP, PR)
+    SendChatMessage(("%s (%s) (%d/%d) %.2f PR"):format(name, message, EP, GP, PR), "RAID")
+end
+
+function EPGPR:ChatRollPlaced(name, roll)
+    SendChatMessage(("%s rolled %d"):format(name, roll), "RAID")
 end
 
 -- When Guild EPGP is changed by percent

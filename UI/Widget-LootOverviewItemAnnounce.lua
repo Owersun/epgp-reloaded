@@ -34,12 +34,11 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         end
 
         -- calculate bidder properties
-        local stringMessage = message or 'roll'
-        local PR = message and (player.PR or 0) or roll -- bidder PR
+        local Rating = message and (player.PR or 0) or roll -- bidder PR
         local GPRatio = message and config.messages[message] or (config.rollRatio or 1) -- GP ratio by which GP is going to be reduced for this bidder, e.g. 1/0.5/0.2/etc.
         local GP = math.floor(GPRatio * itemGP) -- actual GP, bidder is going to get this item for
         local classColor = RAID_CLASS_COLORS[player.class] and RAID_CLASS_COLORS[player.class].colorStr or 'ffffffff' -- bidder class color
-        local coloredMessage = paintBidMessage(stringMessage, GPRatio)
+        local coloredMessage = paintBidMessage(message or 'roll', GPRatio)
 
         -- add another bidder to the list of bidders
         local button = AceGUI:Create("InteractiveLabel")
@@ -47,15 +46,15 @@ EPGPR.UI.LootOverviewItemAnnounce = function(giveItemTo, itemGP)
         local fontFace = button.label:GetFont()
         button:SetFont(fontFace, 15)
         button.highlight:SetColorTexture(1, 1, 1, 0.1)
-        button:SetText(("|c%s%s|r (%s) %s (for %d GP), rating %.2f"):format(classColor, player.name, player.rank, coloredMessage, GP, PR))
+        button:SetText(("|c%s%s|r (%s) %s (for %d GP), rating %.2f"):format(classColor, player.name, player.rank, coloredMessage, GP, Rating))
         button:SetCallback("OnClick", function() giveItemTo(player.name, GP) end)
-        button:SetUserData("data", { name = player.name, message = message, GP = GP, PR = PR })
+        button:SetUserData("data", { name = player.name, message = message, GP = GP, PR = Rating })
         widget:AddChild(button)
 
         -- resort list of bidders (widget children) in place
         table.sort(widget.children, sortFunc)
         widget:DoLayout()
-        EPGPR:ChatBidPlaced(player.name, stringMessage, PR)
+        if message then EPGPR:ChatBidPlaced(player.name, message, player.EP, player.GP, player.PR) else EPGPR:ChatRollPlaced(player.name, roll) end
     end
 
     LootOverviewItemAnnounce:SetCallback("Bid", bid)

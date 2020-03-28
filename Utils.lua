@@ -70,9 +70,9 @@ function EPGPR:GetBidderProperties(name)
         local playerName, _, _, _, _, playerClass = GetRaidRosterInfo(i);
         if playerName == name then
             -- fetch the guild member, considering alts
-            local _, _, playerRank, _, _, _, playerPR = EPGPR:GuildGetMemberInfo(name, true)
+            local _, _, playerRank, _, EP, GP, PR = EPGPR:GuildGetMemberInfo(name, true)
             -- return the information immideately, where "rank" and "PR" are going to be empty if the player is not part of the guild
-            return { name = name, rank = playerRank, class = playerClass, PR = playerPR } -- bail out as soon as possible
+            return { name = name, rank = playerRank, class = playerClass, EP = EP, GP = GP, PR = PR } -- bail out as soon as possible
         end
     end
     return nil
