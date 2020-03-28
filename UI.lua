@@ -64,7 +64,7 @@ StaticPopupDialogs["EPGPR_CHANGE_GUILD_EPGP_POPUP"] = {
         self.editBox:SetText("0")
     end,
     OnAccept = function(self)
-        EPGPR:GuildChangeEPGP(self.editbox:GetText())
+        EPGPR:GuildChangeEPGP(self.editBox:GetText())
     end,
     EditBoxOnTextChanged = function (self, data) -- careful! 'self' here points to the editbox, not the dialog
         local text = self:GetText()
