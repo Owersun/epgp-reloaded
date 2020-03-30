@@ -15,7 +15,7 @@ Support functions
 
 local function configureScrollbar(self)
     local scrollbar, items, rows = self.scrollbar, #self.items, #(self.children or {});
-    if not (rows < items) then scrollbar:Hide(); return end
+    if items == 0 or not (rows < items) then scrollbar:Hide(); return end
     scrollbar:SetMinMaxValues(0, math.max(0, items - rows))
     scrollbar:SetValueStep(1);
     scrollbar:SetStepsPerPage(rows);
@@ -30,13 +30,8 @@ local function drawItems(self)
     end
 end
 
-local function onRowClick(row)
-    EPGPR:Print("OnRowClick")
-end
-
 -- Manage rows in the scrollframe, create missing amount, or remove excessive amount
 local function createRows(self)
-    local row
     local rowHeight = self.rowHeight
     local totalRows = (math.ceil(self.content:GetHeight() / rowHeight) or 0) + 1
     local needRows = math.min(#self.items, totalRows)
@@ -44,15 +39,16 @@ local function createRows(self)
 
     if #rows == needRows then return end
 
+    local row
     -- Add rows
     if needRows > #rows then
-        for _ = #rows + 1, needRows do
+        for i = #rows + 1, needRows do
             row = AceGUI:Create("InteractiveLabel")
             row:SetFullWidth(true)
             local fontFace = row.label:GetFont()
             row:SetFont(fontFace, rowHeight)
             row.highlight:SetColorTexture(1, 1, 1, 0.1)
-            row:SetCallback("OnClick", onRowClick)
+            row:SetCallback("OnClick", function() self:Fire("OnRowClick", i + self.offset) end)
             self:AddChild(row)
         end
         -- redraw rows content as we added few
