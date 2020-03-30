@@ -34,10 +34,17 @@ end
 local function tabRaid(container)
     container:SetLayout("Fill")
 
-    local l = AceGUI:Create("Label")
-    l:SetText("Raid")
-    l:SetFullWidth(true)
-    container:AddChild(l)
+    EPGPR:GuildRefreshRoster()
+    local items = {}
+    for name, data in pairs(EPGPR.State.guildRoster) do
+        local _, playerRank, playerClass, EP, GP, PR = unpack(data)
+        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+        table.insert(items, "|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
+    end
+    local frame = AceGUI:Create("ScrollList")
+    frame:SetLayout("List")
+    frame:SetItems(items)
+    container:AddChild(frame)
 end
 
 local function tabStandby(container)

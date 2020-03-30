@@ -16,6 +16,7 @@ libs\AceSerializer-3.0\AceSerializer-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
 
 UI\AceGUIWidget-StatusBar.lua
+UI\AceGUIContainer-ScrollList.lua
 
 Core.lua
 Utils.lua
