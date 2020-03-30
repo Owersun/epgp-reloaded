@@ -215,34 +215,38 @@ Constructor
 local function Constructor()
     local frame = CreateFrame("Frame", nil, UIParent)
 
-    frame:EnableMouseWheel(true)
-    frame:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel)
-    frame:SetScript("OnSizeChanged", ScrollFrame_OnSizeChanged)
+    local scrollframe = CreateFrame("ScrollFrame", nil, frame)
+    scrollframe:SetPoint("TOPLEFT")
+    scrollframe:SetPoint("BOTTOMRIGHT")
+    scrollframe:EnableMouseWheel(true)
+    scrollframe:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel)
+    scrollframe:SetScript("OnSizeChanged", ScrollFrame_OnSizeChanged)
 
-    local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollFrame%dScrollBar"):format(AceGUI:GetNextWidgetNum(Type)), frame, "UIPanelScrollBarTemplate")
-    scrollbar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 4, -16)
-    scrollbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 4, 16)
+    local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollList%dScrollBar"):format(AceGUI:GetNextWidgetNum(Type)), scrollframe, "UIPanelScrollBarTemplate")
+    scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 0, -16)
+    scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
-    -- set the script as the last step, so it doesn't fire yet
-    scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
     scrollbar:SetObeyStepOnDrag(true)
     -- scrollbar:Hide()
+    -- set the script as the last step, so it doesn't fire yet
+    scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
 
     local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
     scrollbg:SetAllPoints(scrollbar)
     scrollbg:SetColorTexture(0, 0, 0, 0.4)
 
     --Container Support
-    local content = CreateFrame("Frame", nil, frame)
-    content:SetPoint("TOPLEFT", frame, "TOPLEFT")
-    content:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -16, 0)
+    local content = CreateFrame("Frame", nil, scrollframe)
+    scrollframe:SetScrollChild(content)
+    content:SetPoint("TOPLEFT", scrollframe, "TOPLEFT")
+    content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -16, 0)
 
     local widget = {
         buttonH     = 12,
-        localstatus = { scrollvalue = 0 },
         frame       = frame,
-        content     = content,
+        scrollframe = scrollframe,
         scrollbar   = scrollbar,
+        content     = content,
         items       = {},
         type        = Type
     }
