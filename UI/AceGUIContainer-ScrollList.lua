@@ -24,10 +24,9 @@ local function configureScrollbar(self)
 end
 
 local function drawItems(self)
-    local rows, items = self.children or {}, #self.items
-    local toDraw = math.min(#rows, items)
-    for i = 1, toDraw do
-        rows[i]:SetText(self.items[i + self.offset])
+    local rows, items = self.children or {}, self.items
+    for i = 1, #rows do
+        rows[i]:SetText(items[i + self.offset])
     end
 end
 
@@ -39,7 +38,8 @@ end
 local function createRows(self)
     local row
     local rowHeight = self.rowHeight
-    local needRows = (math.ceil(self.content:GetHeight() / rowHeight) or 0) + 1
+    local totalRows = (math.ceil(self.content:GetHeight() / rowHeight) or 0) + 1
+    local needRows = math.min(#self.items, totalRows)
     local rows = self.children or {}
 
     if #rows == needRows then return end

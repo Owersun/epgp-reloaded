@@ -8,19 +8,16 @@ local function tabStangings(container)
     group:SetLayout("Fill")
     group:SetFullWidth(true)
     group:SetHeight(280)
-    local scroll = AceGUI:Create("ScrollFrame")
-    scroll:SetLayout("List")
-    for name, data in pairs(EPGPR.State.guildRoster) do
+    local guildList = {}
+    for name, data in pairs(EPGPR.State.guildRoster or {}) do
         local _, playerRank, playerClass, EP, GP, PR = unpack(data)
-        if PR ~= 0 then
-            local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-            local l = AceGUI:Create("Label")
-            l:SetFullWidth(true)
-            l:SetText("|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
-            scroll:AddChild(l)
-        end
+        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+        table.insert(guildList, "|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
     end
-    group:AddChild(scroll)
+    local frame = AceGUI:Create("ScrollList")
+    frame:SetLayout("List")
+    frame:SetItems(guildList)
+    group:AddChild(frame)
     container:AddChild(group)
 
     local changeGuildEPGP = AceGUI:Create("Button")
@@ -32,74 +29,52 @@ local function tabStangings(container)
 end
 
 local function tabRaid(container)
-    container:SetLayout("Fill")
 
-    EPGPR:GuildRefreshRoster()
-    local items = {}
-    for name, data in pairs(EPGPR.State.guildRoster) do
-        local _, playerRank, playerClass, EP, GP, PR = unpack(data)
-        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        table.insert(items, "|c" .. classColor .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
-    end
-    local frame = AceGUI:Create("ScrollList")
-    frame:SetLayout("List")
-    frame:SetItems(items)
-    container:AddChild(frame)
 end
 
 local function tabStandby(container)
     container:SetLayout("List")
 
     EPGPR:GuildRefreshRoster()
+
+    -- Standby list
     local standbyGroup = AceGUI:Create("SimpleGroup")
     standbyGroup:SetLayout("Fill")
     standbyGroup:SetFullWidth(true)
     standbyGroup:SetHeight(140)
-    local standby = AceGUI:Create("ScrollFrame")
-    standby:SetLayout("List")
-    local standbyList = EPGPR.config.standby.list or {}
-    for name, _ in pairs(standbyList) do
+    local standbyList = {}
+    for name, _ in pairs(EPGPR.config.standby.list or {}) do
         local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
         local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        local l = AceGUI:Create("InteractiveLabel")
-        l:SetFullWidth(true)
-        l:SetCallback("OnClick", function()
-            EPGPR:ConfigSet({ standby = { list = false }})
-            standbyList[name] = nil
-            EPGPR:ConfigSet({ standby = { list = standbyList }})
-        end)
-        l:SetText(("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
-        standby:AddChild(l)
+        table.insert(standbyList, ("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
     end
+    local standby = AceGUI:Create("ScrollList")
+    standby:SetLayout("List")
+    standby:SetItems(standbyList)
     standbyGroup:AddChild(standby)
     container:AddChild(standbyGroup)
 
+    -- Alts list
     local altsGroup = AceGUI:Create("SimpleGroup")
     altsGroup:SetLayout("Fill")
     altsGroup:SetFullWidth(true)
     altsGroup:SetHeight(140)
-    local alts = AceGUI:Create("ScrollFrame")
+    local alts = AceGUI:Create("ScrollList")
     alts:SetLayout("List")
     local function refreshAltsList()
-        alts:ReleaseChildren()
-        local altsList = EPGPR.config.alts.list or {}
-        for alt, main in pairs(altsList) do
+        local altsList = {}
+        for alt, main in pairs(EPGPR.config.alts.list or {}) do
             local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-            local l = AceGUI:Create("InteractiveLabel")
-            l:SetFullWidth(true)
-            l:SetCallback("OnClick", function()
-                EPGPR:SetAlt(alt, nil)
-                refreshAltsList()
-            end) -- remove alt on click
-            l:SetText(("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
-            alts:AddChild(l)
+            table.insert(altsList, ("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
         end
+        alts:SetItems(altsList)
     end
-    altsGroup:AddChild(alts)
     refreshAltsList()
+    altsGroup:AddChild(alts)
     container:AddChild(altsGroup)
 
+    -- Alts controls
     local addAlt = AceGUI:Create("SimpleGroup")
     addAlt:SetLayout("Flow")
     addAlt:SetFullWidth(true)
