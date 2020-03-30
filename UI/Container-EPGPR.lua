@@ -17,9 +17,6 @@ local function tabStangings(container)
     local frame = AceGUI:Create("ScrollList")
     frame:SetLayout("List")
     frame:SetItems(guildList)
-    frame:SetCallback("OnRowClick", function(widget, event, i)
-        EPGPR:Print(i)
-    end)
     group:AddChild(frame)
     container:AddChild(group)
 
@@ -45,15 +42,22 @@ local function tabStandby(container)
     standbyGroup:SetLayout("Fill")
     standbyGroup:SetFullWidth(true)
     standbyGroup:SetHeight(140)
-    local standbyList = {}
-    for name, _ in pairs(EPGPR.config.standby.list or {}) do
-        local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
-        local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-        table.insert(standbyList, ("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
-    end
     local standby = AceGUI:Create("ScrollList")
     standby:SetLayout("List")
-    standby:SetItems(standbyList)
+    local function refreshStandbyList()
+        local standbyList = {}
+        for name, _ in pairs(EPGPR.config.standby.list or {}) do
+            local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
+            local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+            table.insert(standbyList, ("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
+        end
+        standby:SetItems(standbyList)
+    end
+    refreshStandbyList()
+    standby:SetCallback("OnRowClick", function(widget, event, i)
+        table.remove(EPGPR.config.standby.list, i)
+        refreshStandbyList()
+    end)
     standbyGroup:AddChild(standby)
     container:AddChild(standbyGroup)
 
@@ -74,6 +78,10 @@ local function tabStandby(container)
         alts:SetItems(altsList)
     end
     refreshAltsList()
+    alts:SetCallback("OnRowClick", function(widget, event, i)
+        table.remove(EPGPR.config.alts.list, i)
+        refreshAltsList()
+    end)
     altsGroup:AddChild(alts)
     container:AddChild(altsGroup)
 

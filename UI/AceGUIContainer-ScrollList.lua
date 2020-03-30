@@ -66,7 +66,7 @@ local function createRows(self)
 end
 
 local function scrollTo(self, offset)
-    local newOffset = math.max(0, math.min(#self.items, offset))
+    local newOffset = math.max(0, math.min(#self.items - #(self.children or {}), offset))
     if newOffset == self.offset then return end
     self.offset = newOffset
     self.scrollbar:SetValue(newOffset)
@@ -97,7 +97,8 @@ Methods
 local methods = {
 
     ["OnAcquire"] = function(self)
-
+        self.scrollbar:Hide()
+        self.scrollbar:SetValue(0)
     end,
 
     ["OnRelease"] = function(self)
@@ -130,7 +131,6 @@ local function Constructor()
     scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
-    scrollbar:Hide()
     -- set the script as the last step, so it doesn't fire yet
     scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
 
