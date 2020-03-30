@@ -15,18 +15,19 @@ Support functions
 
 local function configureScrollbar(self)
     local scrollbar, items, rows = self.scrollbar, #self.items, #(self.children or {});
+    if not (rows < items) then scrollbar:Hide(); return end
     scrollbar:SetMinMaxValues(0, math.max(0, items - rows))
     scrollbar:SetValueStep(1);
     scrollbar:SetStepsPerPage(rows);
-    scrollbar:SetValue(0);
+    scrollbar:SetValue(self.offset);
+    scrollbar:Show()
 end
 
-local function drawItems(self, offset)
-    local offset = offset or 1
+local function drawItems(self)
     local rows, items = self.children or {}, #self.items
     local toDraw = math.min(#rows, items)
     for i = 1, toDraw do
-        rows[i]:SetText(self.items[i + offset] or "")
+        rows[i]:SetText(self.items[i + self.offset])
     end
 end
 
@@ -64,23 +65,34 @@ local function createRows(self)
             row:Release()
         end
     end
+
+    configureScrollbar(self)
+end
+
+local function scrollTo(self, offset)
+    local newOffset = math.max(0, math.min(#self.items, offset))
+    if newOffset == self.offset then return end
+    self.offset = newOffset
+    self.scrollbar:SetValue(newOffset)
+    drawItems(self)
 end
 
 --[[-----------------------------------------------------------------------------
 Scripts
 -------------------------------------------------------------------------------]]
 
-local function ScrollFrame_OnMouseWheel(frame, value)
-    EPGPR:Print("ScrollFrame_OnMouseWheel " .. value)
+local function ScrollFrame_OnMouseWheel(scrollframe, value)
+    local widget = scrollframe.obj
+    local newOffset = widget.offset - value * #(widget.children or {})
+    scrollTo(widget, newOffset)
 end
 
 local function ScrollFrame_OnSizeChanged(scrollframe)
-    EPGPR:Print("ScrollFrame_OnSizeChanged")
     createRows(scrollframe.obj)
 end
 
-local function ScrollBar_OnScrollValueChanged(frame, value)
-    EPGPR:Print("ScrollBar_OnScrollValueChanged " .. value)
+local function ScrollBar_OnScrollValueChanged(scrollbar, value)
+    scrollTo(scrollbar.obj, value)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -89,32 +101,17 @@ Methods
 local methods = {
 
     ["OnAcquire"] = function(self)
-        self.scrollbar:SetValue(0)
+
     end,
 
     ["OnRelease"] = function(self)
         self.items = {}
-        -- self.scrollbar:Hide()
+        self.offset = 0
     end,
-
-    --[[
-    ["OnWidthSet"] = function(self, width)
-
-    end,
-
-    ["OnHeightSet"] = function(self, height)
-
-    end,
-
-    ["LayoutFinished"] = function(self, width, height)
-
-    end,
-    ]]--
 
     ["SetItems"] = function(self, items)
         self.items = items
         createRows(self)
-        configureScrollbar(self)
     end
 
 }
@@ -137,7 +134,7 @@ local function Constructor()
     scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
-    -- scrollbar:Hide()
+    scrollbar:Hide()
     -- set the script as the last step, so it doesn't fire yet
     scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
 
@@ -158,6 +155,7 @@ local function Constructor()
         scrollbar   = scrollbar,
         content     = content,
         items       = {},
+        offset      = 0,
         type        = Type
     }
     for method, func in pairs(methods) do
