@@ -150,14 +150,13 @@ EPGPR.UI.EPGPR = function()
     -- Create a container frame
     local window = AceGUI:Create("Window")
     window:SetTitle("EPGP Reloaded")
-    window:SetLayout("Flow")
+    window:EnableResize(false)
+    window:SetLayout("Fill")
     window:SetWidth(400)
     window:SetHeight(400)
 
     -- Add tabs to the container
     local tabGroup = AceGUI:Create("TabGroup");
-    tabGroup:SetFullWidth(true)
-    tabGroup:SetFullHeight(true)
     tabGroup:SetLayout("Fill")
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
