@@ -151,7 +151,7 @@ EPGPR.UI.EPGPR = function()
     local window = AceGUI:Create("Window")
     window:SetTitle("EPGP Reloaded")
     window:SetLayout("Flow")
-    window:SetWidth(300)
+    window:SetWidth(400)
     window:SetHeight(400)
 
     -- Add tabs to the container
