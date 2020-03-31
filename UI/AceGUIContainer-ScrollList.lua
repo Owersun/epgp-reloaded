@@ -109,6 +109,7 @@ local methods = {
     ["SetItems"] = function(self, items)
         self.items = items
         createRows(self)
+        drawItems(self)
     end
 
 }

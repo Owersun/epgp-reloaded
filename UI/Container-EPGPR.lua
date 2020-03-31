@@ -35,6 +35,8 @@ end
 local function tabStandby(container)
     container:SetLayout("List")
 
+    local standbyIndex, altsIndex
+
     EPGPR:GuildRefreshRoster()
 
     -- Standby list
@@ -46,16 +48,18 @@ local function tabStandby(container)
     standby:SetLayout("List")
     local function refreshStandbyList()
         local standbyList = {}
+        standbyIndex = {}
         for name, _ in pairs(EPGPR.config.standby.list or {}) do
             local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
             table.insert(standbyList, ("|c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(classColor, name, playerRank, EP, GP, PR))
+            table.insert(standbyIndex, name)
         end
         standby:SetItems(standbyList)
     end
     refreshStandbyList()
     standby:SetCallback("OnRowClick", function(widget, event, i)
-        table.remove(EPGPR.config.standby.list, i)
+        EPGPR.config.standby.list[standbyIndex[i]] = nil
         refreshStandbyList()
     end)
     standbyGroup:AddChild(standby)
@@ -70,16 +74,18 @@ local function tabStandby(container)
     alts:SetLayout("List")
     local function refreshAltsList()
         local altsList = {}
+        altsIndex = {}
         for alt, main in pairs(EPGPR.config.alts.list or {}) do
             local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
             table.insert(altsList, ("%s is alt of |c%s%s|r (%s): EP/GP: %d/%d, PR %.2f"):format(alt, classColor, playerName, playerRank, EP, GP, PR))
+            table.insert(altsIndex, alt)
         end
         alts:SetItems(altsList)
     end
     refreshAltsList()
     alts:SetCallback("OnRowClick", function(widget, event, i)
-        table.remove(EPGPR.config.alts.list, i)
+        EPGPR:SetAlt(altsIndex[i], nil)
         refreshAltsList()
     end)
     altsGroup:AddChild(alts)
