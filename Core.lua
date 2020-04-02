@@ -57,7 +57,7 @@ end
 function EPGPR:DetermineTheState()
     local _, isMasterLooter = GetLootMethod()
     local isInRaid = IsInRaid("player")
-    if self.State.active and not (isInRaid or isMasterLooter == 0) then
+    if self.State.active == true and not (isInRaid or isMasterLooter == 0) then
         -- we're active and left the group/lost master looter
         self:Deactivate() -- implicitly
     elseif self.State.active == false and not isInRaid then
