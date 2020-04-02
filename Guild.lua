@@ -67,9 +67,8 @@ end
 function EPGPR:GuildGetMemberInfo(name, considerAlts)
     if considerAlts then
         -- look in the alts list
-        local alts = EPGPR.config.alts.list or {}
-        local altOf = alts[name]
-        name = altOf and altOf or name
+        local alts = self.config.alts.list or {}
+        name = alts[name] or name
     end
     -- Refresh guildmember info to the most recent state
     if self.State.guildRoster[name] then
@@ -88,7 +87,7 @@ end
 -- Change guild member EP/GP values
 function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     local playerName, i, _, _, oldEP, oldGP, _ = self:GuildGetMemberInfo(name, considerAlts)
-    if not i then return end -- guild member index cannot be determined properly
+    if i == nil then self:Print("CANNOT FIND GUILD MEMBER " .. name); return; end -- guild member index cannot be determined properly
     local newEP = floor(max(0, oldEP + tonumber(diffEP or 0)))
     local newGP = floor(max(self.config.GP.basegp, oldGP + tonumber(diffGP or 0)))
     if newEP ~= oldEP or newGP ~= oldGP then
@@ -104,12 +103,12 @@ end
 function EPGPR:GuildChangeEPGP(percent)
     local change = tonumber(percent)
     if (tostring(change) ~= tostring(percent)) then
-        EPGPR:Print("GuildChangeEPGP " .. tostring(percent) .. " percent is not a number")
+        self:Print("GuildChangeEPGP " .. tostring(percent) .. " percent is not a number")
         return
     end
     massGuildUpdate(function()
         local basegp = EPGPR.config.GP.basegp
-        for _, member in pairs(self.State.guildRoster) do
+        for _, member in pairs(EPGPR.State.guildRoster) do
             local i, _, _, oldEP, oldGP, _ = unpack(member)
             local newEP = floor(max(0, oldEP * (100 + percent) / 100))
             local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
