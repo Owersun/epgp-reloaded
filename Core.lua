@@ -1,4 +1,4 @@
-local IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide = IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, StaticPopup_Show, StaticPopup_Hide
+local IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, CanEditOfficerNote, StaticPopup_Show, StaticPopup_Hide = IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, CanEditOfficerNote, StaticPopup_Show, StaticPopup_Hide
 EPGPR = LibStub("AceAddon-3.0"):NewAddon("EPGPR", "AceEvent-3.0", "AceConsole-3.0", "AceHook-3.0", "AceComm-3.0", "AceSerializer-3.0")
 
 -- Local instances of ACE Libraries
@@ -63,8 +63,8 @@ function EPGPR:DetermineTheState()
     elseif self.State.active == false and not isInRaid then
         -- we're disabled and left the group
         self.State.active = nil -- reset the state
-    elseif self.State.active == nil and isMasterLooter == 0 then
-        -- we're in a blank state and are master looter
+    elseif self.State.active == nil and isMasterLooter == 0 and CanEditOfficerNote() then
+        -- we're in a blank state and are master looter and can edit officer notes (it doesn't make sense otherwise)
         StaticPopup_Show("EPGPR_ACTIVATE_POPUP") -- Popup dialog is going to set us to either enabled or disabled
     end
 end
