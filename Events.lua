@@ -1,4 +1,4 @@
-local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate
+local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem
 
 -- WoW events we hook to when activated
 local events = { "LOOT_OPENED", "LOOT_CLOSED", "LOOT_SLOT_CLEARED", "ENCOUNTER_END", "GROUP_ROSTER_UPDATE", "GUILD_ROSTER_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_WHISPER" }
@@ -30,7 +30,6 @@ local itemsInLoot = {}
 
 -- Loot was opened
 function EPGPR:LOOT_OPENED(_, autoLoot, isFromItem)
-    if autoLoot or isFromItem then return end
     itemsInLoot = {}
     -- build list of items in opened loot
     for slotID = 1, GetNumLootItems() do
@@ -49,7 +48,7 @@ function EPGPR:LOOT_OPENED(_, autoLoot, isFromItem)
         end
     end
     -- if the resulting table is not empty - open the loot overview form
-    if next(itemsInLoot) ~= nil then
+    if not (autoLoot or isFromItem) and next(itemsInLoot) ~= nil then
         EPGPR:UILootOverview():Fire("ShowItems", itemsInLoot)
     end
 end
@@ -97,7 +96,9 @@ end
 -- This hook is going to be executed before every attempt to distribute loot through master loot
 -- We save here the loot and to whom it is going to be attempted to be given (which can fail)
 EPGPR.GiveMasterLootHook = function(slotId, candidateId, ...)
-    itemsInLoot[slotId].candidate = GetMasterLootCandidate(slotId, candidateId)
+    if itemsInLoot[slotId] then
+        itemsInLoot[slotId].candidate = GetMasterLootCandidate(slotId, candidateId)
+    end
 end
 
 --- This handler gets called when a loot slot is cleared (loot item is given to someone).
