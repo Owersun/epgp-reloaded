@@ -1,4 +1,4 @@
-local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, MAX_RAID_MEMBERS
+local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS
 
 -- Calculate GP value of an item from its link
 function EPGPR:ItemGPValue(itemLink)
@@ -49,14 +49,14 @@ end
 
 -- Add history record and broadcast too all other apps in the guild
 function EPGPR:AddHistory(targetPlayer, comment, EP, GP)
-    local author, time = UnitName("player"), time()
-    self:SaveHistoryRow(author, targetPlayer, comment, EP, GP, time)
-    self:Broadcast("SaveHistoryRow", { author, targetPlayer, comment, EP, GP, time })
+    local author, timestamp = UnitName("player"), time()
+    self:SaveHistoryRow(author, targetPlayer, comment, EP, GP, timestamp)
+    self:Broadcast("SaveHistoryRow", { author, targetPlayer, comment, EP, GP, timestamp })
 end
 
 -- Add a row into persistent history table
-function EPGPR:SaveHistoryRow(author, targetPlayer, comment, EP, GP, time)
-    table.insert(EPGPRHISTORY, { author, targetPlayer, comment, EP, GP, time })
+function EPGPR:SaveHistoryRow(author, targetPlayer, comment, EP, GP, timestamp)
+    table.insert(EPGPRHISTORY, { author, targetPlayer, comment, EP, GP, timestamp or time() })
 end
 
 -- When a bid has been placed by a player name, there are many things to take in account and return:
