@@ -33,7 +33,7 @@ local function guildRefreshRoster()
         if playerName then guildRoster[playerName] = playerData end
     end
     EPGPR.State.guildRoster = guildRoster
-    EPGPR:Print(guildMemebers .. " members guildRoster updated")
+    -- EPGPR:Print(guildMemebers .. " members guildRoster updated")
 end
 
 -- Most of the time GUILD_ROSTER_UPDATE is fired multiple times for no reason.
@@ -94,8 +94,8 @@ function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
         -- change values
         GuildRosterSetOfficerNote(i, newEP .. "," .. newGP)
         self:Print(playerName  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
-        -- refresh member
-        self:GuildGetMemberInfo(playerName)
+        -- refresh member that we just updated
+        self:GuildGetMemberInfo(playerName, false)
     end
 end
 
@@ -120,7 +120,7 @@ function EPGPR:GuildChangeEPGP(percent)
 end
 
 -- Add EP to all names from the list that are found in the guild
--- names has to be in the fomr "{[name1] = ratioN, [name2] = ratioM, ...}
+-- names has to be in the format "{[nameN] = ratioN, [nameM] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
     massGuildUpdate(function()
         -- filter out all alts on the list and converge their EPRating to their mains

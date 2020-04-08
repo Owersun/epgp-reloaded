@@ -128,8 +128,8 @@ local function Constructor()
     scrollframe:SetScript("OnSizeChanged", ScrollFrame_OnSizeChanged)
 
     local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollList%dScrollBar"):format(AceGUI:GetNextWidgetNum(Type)), scrollframe, "UIPanelScrollBarTemplate")
-    scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 0, -16)
-    scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
+    scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 4, -16)
+    scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 4, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
     -- set the script as the last step, so it doesn't fire yet
@@ -142,8 +142,8 @@ local function Constructor()
     --Container Support
     local content = CreateFrame("Frame", nil, scrollframe)
     scrollframe:SetScrollChild(content)
-    content:SetPoint("TOPLEFT", scrollframe, "TOPLEFT")
-    content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -16, 0)
+    content:SetPoint("TOPLEFT")
+    content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -20, 0)
 
     local widget = {
         rowHeight   = 12,
