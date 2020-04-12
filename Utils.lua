@@ -51,7 +51,7 @@ end
 function EPGPR:AddHistory(targetPlayer, comment, EP, GP)
     local author, timestamp = UnitName("player"), time()
     self:SaveHistoryRow(author, targetPlayer, comment, EP, GP, timestamp)
-    self:Broadcast("SaveHistoryRow", { author, targetPlayer, comment, EP, GP, timestamp })
+    self:Broadcast("SaveHistoryRow", author, targetPlayer, comment, EP, GP, timestamp)
 end
 
 -- Add a row into persistent history table
