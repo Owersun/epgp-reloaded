@@ -1,5 +1,5 @@
 local IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, CanEditOfficerNote, StaticPopup_Show, StaticPopup_Hide = IsInRaid, ItemRefTooltip, GameTooltip, GetLootMethod, CanEditOfficerNote, StaticPopup_Show, StaticPopup_Hide
-EPGPR = LibStub("AceAddon-3.0"):NewAddon("EPGPR", "AceEvent-3.0", "AceConsole-3.0", "AceHook-3.0", "AceComm-3.0", "AceSerializer-3.0")
+EPGPR = LibStub("AceAddon-3.0"):NewAddon("EPGPR", "AceEvent-3.0", "AceConsole-3.0", "AceHook-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceBucket-3.0")
 
 -- Local instances of ACE Libraries
 EPGPR.Libs = {

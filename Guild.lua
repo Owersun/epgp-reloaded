@@ -1,5 +1,5 @@
 local EPGPR, GetNumGuildMembers, GetGuildRosterInfo, GuildRosterSetOfficerNote = EPGPR, GetNumGuildMembers, GetGuildRosterInfo, GuildRosterSetOfficerNote
-local max, floor = math.max, math.floor
+local max, floor, unpack = math.max, math.floor, unpack
 
 -- Return player EP/GP and priority from its officer note
 local function guildGetMemeberEPGP(officerNote)
@@ -26,41 +26,14 @@ local function guildFetchMember(i)
 end
 
 -- refresh guild roster
-local function guildRefreshRoster()
-    local guildRoster, guildMemebers = {}, GetNumGuildMembers()
-    for i = 1, guildMemebers do
+function EPGPR:GuildRefreshRoster()
+    local guildRoster, guildMembers = {}, GetNumGuildMembers()
+    for i = 1, guildMembers do
         local playerName, playerData = guildFetchMember(i)
         if playerName then guildRoster[playerName] = playerData end
     end
-    EPGPR.State.guildRoster = guildRoster
-    -- EPGPR:Print(guildMemebers .. " members guildRoster updated")
-end
-
--- Most of the time GUILD_ROSTER_UPDATE is fired multiple times for no reason.
--- Sometimes it can fire hundred of times (at time of guild EPGP decays for example)
--- With this flag and a timer we cause batch updates of guild roster be grouped into one guildRoster refresh per 0.5 second
-local suppressGuildUpdate = false;
-
--- mass guild update handler that's going to prevent avalanche of updates and fired events
-local function massGuildUpdate(callback)
-    -- suppress updates
-    suppressGuildUpdate = true
-    -- refresh guild
-    guildRefreshRoster()
-    -- do the update
-    callback()
-    -- re-read guild
-    guildRefreshRoster()
-    -- re-enable updates
-    suppressGuildUpdate = false
-end
-
--- Update local state guildRoster
-function EPGPR:GuildRefreshRoster()
-    if suppressGuildUpdate then return end
-    suppressGuildUpdate = true
-    guildRefreshRoster()
-    C_Timer.After(0.5, function() suppressGuildUpdate = false end)
+    self.State.guildRoster = guildRoster
+    self:Print(guildMembers .. " members guildRoster updated")
 end
 
 -- Refresh guild member in local state and return his data
@@ -78,6 +51,7 @@ function EPGPR:GuildGetMemberInfo(name, considerAlts)
         -- we're going to return either fresh data of the player, or our cache data by the name, with i being null in that case,
         -- indicating that the player data is stale and must not be changed by index in this case.
         -- this allows showing data in most cases of viewing forms and bidding, and prevent wrong writes (with silent fails)
+        if name ~= playerName then EPGPR:Print('Found ' .. playerName .. ' on index of ' .. name) end
         return name, name == playerName and i or nil, playerRank, playerClass, EP, GP, PR
     end
     -- no guild member by that name found at all
@@ -87,7 +61,7 @@ end
 -- Change guild member EP/GP values
 function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     local playerName, i, _, _, oldEP, oldGP, _ = self:GuildGetMemberInfo(name, considerAlts)
-    if i == nil then self:Print("CANNOT FIND GUILD MEMBER " .. name); return; end -- guild member index cannot be determined properly
+    if i == nil then return end -- guild member index cannot be determined properly
     local newEP = floor(max(0, oldEP + tonumber(diffEP or 0)))
     local newGP = floor(max(self.config.GP.basegp, oldGP + tonumber(diffGP or 0)))
     if newEP ~= oldEP or newGP ~= oldGP then
@@ -106,35 +80,33 @@ function EPGPR:GuildChangeEPGP(percent)
         self:Print("GuildChangeEPGP " .. tostring(percent) .. " percent is not a number")
         return
     end
-    massGuildUpdate(function()
-        local basegp = EPGPR.config.GP.basegp
-        for _, member in pairs(EPGPR.State.guildRoster) do
-            local i, _, _, oldEP, oldGP, _ = unpack(member)
-            local newEP = floor(max(0, oldEP * (100 + percent) / 100))
-            local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
-            if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
-        end
-        EPGPR:ChatGuildEPGPChanged(percent)
-        EPGPR:AddHistory("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
-    end)
+    local basegp, guildMembers = self.config.GP.basegp, GetNumGuildMembers()
+    for i = 1, guildMembers do
+        local _, playerData = guildFetchMember(i)
+        local _, _, _, oldEP, oldGP, _ = unpack(playerData)
+        local newEP = floor(max(0, oldEP * (100 + percent) / 100))
+        local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
+        if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
+    end
+    self:ChatGuildEPGPChanged(percent)
+    self:AddHistory("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
 end
 
 -- Add EP to all names from the list that are found in the guild
 -- names has to be in the format "{[nameN] = ratioN, [nameM] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
-    massGuildUpdate(function()
-        -- filter out all alts on the list and converge their EPRating to their mains
-        local alts = EPGPR.config.alts.list or {}
-        for alt, main in pairs(alts) do -- iterate through alts table
-            if names[alt] then -- if there is alt in the list
-                names[main] = math.max(names[main] or 0, names[alt]) -- assign biggest EPRatio between alt and main to the main
-                names[alt] = nil -- remove the alt from the list
-            end
+    -- filter out all alts on the list and converge their EPRating to their mains
+    local alts = self.config.alts.list or {}
+    for alt, main in pairs(alts) do -- iterate through alts table
+        if names[alt] then -- if there is alt in the list
+            names[main] = math.max(names[main] or 0, names[alt]) -- assign biggest EPRatio between alt and main to the main
+            names[alt] = nil -- remove the alt from the list
         end
-        -- change all people in the list EP by the ratio
-        for name, ratio in pairs(names) do
-            -- we don't need to consider alts here as they are already replaced by their mains
-            EPGPR:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)
-        end
-    end)
+    end
+    self:GuildRefreshRoster()
+    -- change all people in the list EP by the ratio
+    for name, ratio in pairs(names) do
+        -- we don't need to consider alts here as they are already replaced by their mains
+        self:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)
+    end
 end
