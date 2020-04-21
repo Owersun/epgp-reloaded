@@ -17,7 +17,6 @@ end
 
 -- Encounter has been won
 function EPGPR:EncounterWon(encounterId)
-    EPGPR:Print("Encounter won " .. encounterId)
     local encounter = self.config.encounter[encounterId]
     if encounter and encounter.track and encounter.EP > 0 then
         local names = {}

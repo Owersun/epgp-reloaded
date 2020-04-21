@@ -33,7 +33,6 @@ function EPGPR:GuildRefreshRoster()
         if playerName then guildRoster[playerName] = playerData end
     end
     self.State.guildRoster = guildRoster
-    self:Print(guildMembers .. " members guildRoster updated")
 end
 
 -- Refresh guild member in local state and return his data
@@ -67,7 +66,6 @@ function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     if newEP ~= oldEP or newGP ~= oldGP then
         -- change values
         GuildRosterSetOfficerNote(i, newEP .. "," .. newGP)
-        self:Print(playerName  .. " EP/GP changed to " .. newEP .. "/" .. newGP)
         -- refresh member that we just updated
         self:GuildGetMemberInfo(playerName, false)
     end
