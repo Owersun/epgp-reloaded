@@ -35,6 +35,42 @@ local defaultConfig = {
         [615] = { name = "Flamegor", track = true, EP = 7 },
         [616] = { name = "Chromaggus", track = true, EP = 7 },
         [617] = { name = "Nefarian", track = true, EP = 7 },
+        -- Ahn'Qiraj
+        [709] = { name = "The Prophet Skeram", track = true, EP = 10 },
+        [710] = { name = "Silithid Royalty", track = true, EP = 10 },
+        [711] = { name = "Battleguard Sartura", track = true, EP = 10 },
+        [712] = { name = "Fankriss the Unyielding", track = true, EP = 10 },
+        [713] = { name = "Viscidus", track = true, EP = 10 },
+        [714] = { name = "Princess Huhuran", track = true, EP = 10 },
+        [715] = { name = "Twin Emperors", track = true, EP = 10 },
+        [716] = { name = "Ouro", track = true, EP = 10 },
+        [717] = { name = "C'thun", track = true, EP = 12 },
+    },
+    item = {
+        -- Imperial Qiraji Armaments
+        [21232] = {
+            4, -- rarity
+            79, -- iLvl
+            'INVTYPE_WEAPON' -- slot
+        },
+        -- Imperial Qiraji Regalia
+        [21237] = { 4, 79, 'INVTYPE_WEAPON' },
+        -- Vek'nilash's Circlet
+        [20926] = { 4, 81, 'INVTYPE_HEAD' },
+        -- Ouro's Intact Hide
+        [20927] = { 4, 81, 'INVTYPE_LEGS' },
+        -- Qiraji Bindings of Command
+        [20928] = { 4, 78, 'INVTYPE_FEET' },
+        -- Carapace of the Old God
+        [20929] = { 4, 88, 'INVTYPE_CHEST' },
+        -- Vek'lor's Diadem
+        [20930] = { 4, 81, 'INVTYPE_HEAD' },
+        -- Skin of the Great Sandworm
+        [20931] = { 4, 81, 'INVTYPE_LEGS' },
+        -- Qiraji Bindings of Dominance
+        [20932] = { 4, 78, 'INVTYPE_SHOULDER' },
+        -- Husk of the Old God
+        [20933] = { 4, 88, 'INVTYPE_CHEST' },
     },
     GP = {
         basegp = 1,

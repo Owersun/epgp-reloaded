@@ -1,9 +1,26 @@
 local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS
 
+local function getItemId(link)
+    local id = string.match(link, '^|c%x+|Hitem:(%d+):')
+    return id and tonumber(id) or nil
+end
+
+-- many UI addons that introduce tooltip under cursor implement it the way, the tooltip is constantly redrawn under the cursor
+-- to reduce pressure on constant calculation of GP we cache every item we see into memory
+-- barely session cache will exceed hundred items, which is a good tradeoff between memory and cpu
+local gpValues = {}
+
 -- Calculate GP value of an item from its link
 function EPGPR:ItemGPValue(itemLink)
-    local _, _, rarity, ilvl, _, _, _, _, slot = GetItemInfo(itemLink)
-    return math.floor(4.83 * (2 ^ (ilvl/26 + (rarity - 4))) * (self.config.GP.slotModifier[slot] or 1))
+    if gpValues[itemLink] then return gpValues[itemLink] end
+    local _, link, rarity, ilvl, _, _, _, _, slot = GetItemInfo(itemLink)
+    -- override?
+    local id = getItemId(link)
+    if self.config.item[id] then
+        rarity, ilvl, slot = unpack(self.config.item[id])
+    end
+    gpValues[itemLink] = math.floor(4.83 * (2 ^ (ilvl/26 + (rarity - 4))) * (self.config.GP.slotModifier[slot] or 1))
+    return gpValues[itemLink]
 end
 
 -- Item was given to the player for GP using the announcement process
