@@ -3,9 +3,9 @@ local EPGPR, SendChatMessage = EPGPR, SendChatMessage
 -- When loot is being announced
 function EPGPR:ChatAnnounceLoot(itemLink, GP)
     SendChatMessage(("%s %d GP"):format(itemLink, GP), "RAID_WARNING");
-    SendChatMessage("whisper '!need' for main spec", "RAID")
-    SendChatMessage("whisper '!off' for off spec", "RAID")
-    SendChatMessage("/roll for Donyshko spec", "RAID")
+    SendChatMessage("whisper '!need' for main spec / full price", "RAID")
+    SendChatMessage("whisper '!off' for off spec / half price", "RAID")
+    SendChatMessage("/roll for Bank spec / free", "RAID")
 end
 
 -- When encounter has been won and EP was awarded
