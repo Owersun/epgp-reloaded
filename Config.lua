@@ -71,6 +71,14 @@ local defaultConfig = {
         [20932] = { 4, 78, 'INVTYPE_SHOULDER' },
         -- Husk of the Old God
         [20933] = { 4, 88, 'INVTYPE_CHEST' },
+        -- Head of Onyxia Hore
+        [18422] = { 4, 74, 'INVTYPE_TRINKET' },
+        -- Head of Onyxia Alliance
+        [18423] = { 4, 74, 'INVTYPE_TRINKET' },
+        -- Head of Nefarian Horde
+        [19002] = { 4, 83, 'INVTYPE_TRINKET' },
+        -- Head of Nefarian Alliance
+        [19003] = { 4, 83, 'INVTYPE_TRINKET' },
     },
     GP = {
         basegp = 1,
