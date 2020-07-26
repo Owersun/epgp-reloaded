@@ -29,7 +29,7 @@ function EPGPR:OnInitialize()
     self:RegisterComm(self.Const.CommunicationPrefix)
     -- Register slash command
     self:RegisterChatCommand("epgp", "UIEPGPFrame")
-    -- Hook tooltips to add a line "GP Value: "
+    -- Hook tooltips to add the line "GP Value: "
     self:HookScript(GameTooltip, "OnTooltipSetItem", EPGPR.OnTooltipSetItem)
     self:HookScript(ItemRefTooltip, "OnTooltipSetItem", EPGPR.OnTooltipSetItem)
 end
@@ -40,7 +40,7 @@ function EPGPR:OnEnable()
     self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
     -- Print we are done
     self:Print("Enabled. Type /epgp to show options.")
-    -- find out our own state after start (for cases of ui reload)
+    -- find out our own state after the start (for cases of ui reload)
     self:DetermineTheState()
 end
 
@@ -69,7 +69,7 @@ function EPGPR:DetermineTheState()
     end
 end
 
--- Function is going to be called when all conditions are met:
+-- The function is going to be called when all conditions are met:
 -- We are in a guild
 -- We can edit officer notes
 -- We are in a group

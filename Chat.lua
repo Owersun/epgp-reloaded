@@ -18,16 +18,17 @@ function EPGPR:ChatItemDistributed(name, itemLink, GP)
     SendChatMessage(itemLink .. " has been given to " .. name .. (GP and (" for " .. GP .. " GP") or " without EPGP"), "GUILD")
 end
 
--- When a bit has been placed on an item
+-- When a bid has been placed on an item
 function EPGPR:ChatBidPlaced(name, message, EP, GP, PR)
     SendChatMessage(("%s (%s) (%d/%d) %.2f PR"):format(name, message, EP, GP, PR), "RAID")
 end
 
+-- When someone rolled for an item
 function EPGPR:ChatRollPlaced(name, roll)
     SendChatMessage(("%s rolled %d"):format(name, roll), "RAID")
 end
 
--- When Guild EPGP is changed by percent
+-- When Guild EPGP is changed by the percent
 function EPGPR:ChatGuildEPGPChanged(percent)
     SendChatMessage(("Guild EPGP changed by %d percent"):format(percent), "GUILD")
 end

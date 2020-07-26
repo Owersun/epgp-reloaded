@@ -1,7 +1,7 @@
 local EPGPR, UnitName = EPGPR, UnitName
 
 -- this is a "safe-list" of functions exposed to be externally called.
--- they are proxied through this table, to prevent exploits that can be possible if everything is exposed for RPC
+-- they are proxied through this table, to prevent exploits that can be possible if everything is exposed as RPC
 local communitaction = {
     SaveHistoryRow = function(...) EPGPR:SaveHistoryRow(...) end,
     Print = function(...) EPGPR:Print(...) end

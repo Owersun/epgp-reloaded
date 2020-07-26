@@ -1,11 +1,11 @@
 local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem
 
--- WoW events we hook to when activated
+-- WoW events we hook to, when activated
 local events = { "LOOT_OPENED", "LOOT_CLOSED", "LOOT_SLOT_CLEARED", "ENCOUNTER_END", "GROUP_ROSTER_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_WHISPER" }
 -- Our internal messages we dispatch and listen to
 local messages = { "EPGPR_ANNOUNCEMENT_START", "EPGPR_ANNOUNCEMENT_CANCEL" }
 
--- AceBucket handler that squashes guild rapid roster update events into one call
+-- AceBucket handler that squashes rapid guild roster update events into one call
 local guildUpdateHandler
 
 -- Register all events we need to work being active
@@ -31,7 +31,7 @@ function EPGPR:LOOT_OPENED(_, autoLoot, isFromItem)
     -- build list of items in opened loot
     for slotID = 1, GetNumLootItems() do
         if LootSlotHasItem(slotID) then
-            local lootIcon, lootName, _, _, lootQuality, _, _, _, _ = GetLootSlotInfo(slotID);
+            local lootIcon, lootName, _, _, _, _, _, _, _ = GetLootSlotInfo(slotID);
             local itemLink = GetLootSlotLink(slotID)
             if itemLink then
                 itemsInLoot[slotID] = {
@@ -61,17 +61,17 @@ function EPGPR:ENCOUNTER_END(_, encounterId, _, _, _, success)
     if success == 1 then self:EncounterWon(encounterId) end
 end
 
--- Left/Joined the group
+-- Left/Joined a group
 function EPGPR:GROUP_ROSTER_UPDATE(_)
     self:DetermineTheState()
 end
 
--- We (maybe) got a masterlooter role, or lost it
+-- We (maybe) got masterlooter role, or lost it
 function EPGPR:PARTY_LOOT_METHOD_CHANGED(_)
     self:DetermineTheState()
 end
 
--- Pick up messages we are interested in from the system messages (in yellow)
+-- Pick up messages we are interested in from system messages (in yellow)
 function EPGPR:CHAT_MSG_SYSTEM(_, message)
     local name, roll = message:match("(%S+) выбрасывает (%d+) %(1%-100%)") -- watch for rolls
     if name and self.config.bidding.considerRoll then self:UILootOverview():Fire("Bid", name, nil, tonumber(roll)) end
@@ -93,7 +93,7 @@ EPGPR.GiveMasterLootHook = function(slotId, candidateId, ...)
 end
 
 --- This handler gets called when a loot slot is cleared (loot item is given to someone).
---  This is where we enhance it with the candidate we gave it to by master loot and pass to the LootOverview handler
+--  This is where we enhance it with the candidate we gave it to by master loot, and pass to the LootOverview handler
 function EPGPR:LOOT_SLOT_CLEARED(_, slotId, ...)
     self:UILootOverview():Fire("ClearSlot", slotId, itemsInLoot[slotId])
 end
@@ -103,7 +103,7 @@ function EPGPR:EPGPR_ANNOUNCEMENT_START(_, slotId)
     self:UILootOverview():Fire("AnnounceSlot", slotId)
 end
 
--- Announcement has been cancelled (sent by the same button)
+-- Announcement has been cancelled (sent by the same button in state "Cancel")
 function EPGPR:EPGPR_ANNOUNCEMENT_CANCEL(_)
     self:UILootOverview():Fire("AnnounceSlot", nil)
 end

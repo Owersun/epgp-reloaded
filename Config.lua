@@ -1,6 +1,6 @@
 local EPGPR, mergeTables = EPGPR, EPGPR.mergeTables
 
--- set config value to current config and persistent config
+-- set the config value to the current config and persistent config
 -- "change" is expected to be table with path to the changed key, like {general = {debug = true}}
 function EPGPR:ConfigSet(change)
     EPGPRCONFIG = mergeTables(EPGPRCONFIG, change)
@@ -222,6 +222,34 @@ local configOptions = {
                 Nefarian = { name = "Nefarian", type = "description", order = 58, width = 2 },
                 NefarianTrack = { arg = { 617, "track" }, name = "track", type = "toggle", order = 59, width = 0.5 },
                 NefarianEP = { arg = { 617, "EP" }, name = "EP", type = "input", order = 60, width = 0.5 },
+                ["Ahn'Qiraj"] = { name = "Ahn'Qiraj", type = "header", order = 61, },
+                Skeram = { name = "The Prophet Skeram", type = "description", order = 62, width = 2 },
+                SkeramTrack = { arg = { 709, "track" }, name = "track", type = "toggle", order = 63, width = 0.5 },
+                SkeramEP = { arg = { 709, "EP" }, name = "EP", type = "input", order = 64, width = 0.5 },
+                Trio = { name = "Silithid Royalty", type = "description", order = 65, width = 2 },
+                TrioTrack = { arg = { 710, "track" }, name = "track", type = "toggle", order = 66, width = 0.5 },
+                TrioEP = { arg = { 710, "EP" }, name = "EP", type = "input", order = 67, width = 0.5 },
+                Sartura = { name = "Battleguard Sartura", type = "description", order = 68, width = 2 },
+                SarturaTrack = { arg = { 711, "track" }, name = "track", type = "toggle", order = 69, width = 0.5 },
+                SarturaEP = { arg = { 711, "EP" }, name = "EP", type = "input", order = 70, width = 0.5 },
+                Fankriss = { name = "Fankriss the Unyielding", type = "description", order = 71, width = 2 },
+                FankrissTrack = { arg = { 712, "track" }, name = "track", type = "toggle", order = 72, width = 0.5 },
+                FankrissEP = { arg = { 712, "EP" }, name = "EP", type = "input", order = 73, width = 0.5 },
+                Viscidus = { name = "Viscidus", type = "description", order = 74, width = 2 },
+                ViscidusTrack = { arg = { 713, "track" }, name = "track", type = "toggle", order = 75, width = 0.5 },
+                ViscidusEP = { arg = { 713, "EP" }, name = "EP", type = "input", order = 76, width = 0.5 },
+                Huhuran = { name = "Princess Huhuran", type = "description", order = 77, width = 2 },
+                HuhuranTrack = { arg = { 714, "track" }, name = "track", type = "toggle", order = 78, width = 0.5 },
+                HuhuranEP = { arg = { 714, "EP" }, name = "EP", type = "input", order = 79, width = 0.5 },
+                Emperors = { name = "Twin Emperors", type = "description", order = 80, width = 2 },
+                EmperorsTrack = { arg = { 715, "track" }, name = "track", type = "toggle", order = 81, width = 0.5 },
+                EmperorsEP = { arg = { 715, "EP" }, name = "EP", type = "input", order = 82, width = 0.5 },
+                Ouro = { name = "Ouro", type = "description", order = 83, width = 2 },
+                OuroTrack = { arg = { 716, "track" }, name = "track", type = "toggle", order = 84, width = 0.5 },
+                OuroEP = { arg = { 716, "EP" }, name = "EP", type = "input", order = 85, width = 0.5 },
+                Cthun = { name = "C'thun", type = "description", order = 86, width = 2 },
+                CthunTrack = { arg = { 717, "track" }, name = "track", type = "toggle", order = 87, width = 0.5 },
+                CthunEP = { arg = { 717, "EP" }, name = "EP", type = "input", order = 88, width = 0.5 },
             }
         },
         GP = {

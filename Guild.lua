@@ -1,7 +1,7 @@
 local EPGPR, GetNumGuildMembers, GetGuildRosterInfo, GuildRosterSetOfficerNote = EPGPR, GetNumGuildMembers, GetGuildRosterInfo, GuildRosterSetOfficerNote
 local max, floor, unpack = math.max, math.floor, unpack
 
--- Return player EP/GP and priority from its officer note
+-- Return player EP/GP and priority from his officer notes
 local function guildGetMemeberEPGP(officerNote)
     local noteEP, noteGP = officerNote:match("(%d+),(%d+)")
     local EP = noteEP or 0;
@@ -9,7 +9,7 @@ local function guildGetMemeberEPGP(officerNote)
     return EP, GP, floor((EP / GP) * 100) / 100
 end
 
--- Get guild member data in format we work on from roster
+-- Get guild member data from the guild roster, and return it in format we work with
 local function guildFetchMember(i)
     local name, rank, _, _, _, _, _, officernote, _, _, classEnglish = GetGuildRosterInfo(i);
     if not name then return nil end
@@ -42,14 +42,14 @@ function EPGPR:GuildGetMemberInfo(name, considerAlts)
         local alts = self.config.alts.list or {}
         name = alts[name] or name
     end
-    -- Refresh guildmember info to the most recent state
+    -- Refresh guild member info to the most recent state
     if self.State.guildRoster[name] then
         local playerName, playerData = guildFetchMember(self.State.guildRoster[name][1])
         if name == playerName then self.State.guildRoster[name] = playerData end
         local i, playerRank, playerClass, EP, GP, PR = unpack(self.State.guildRoster[name])
         -- we're going to return either fresh data of the player, or our cache data by the name, with i being null in that case,
         -- indicating that the player data is stale and must not be changed by index in this case.
-        -- this allows showing data in most cases of viewing forms and bidding, and prevent wrong writes (with silent fails)
+        -- this allows showing data in cases of viewing forms and bidding, and prevent wrong writes (with silent fails)
         if name ~= playerName then EPGPR:Print('Found ' .. playerName .. ' on index of ' .. name) end
         return name, name == playerName and i or nil, playerRank, playerClass, EP, GP, PR
     end
@@ -66,7 +66,7 @@ function EPGPR:GuildChangeMemberEPGP(name, diffEP, diffGP, considerAlts)
     if newEP ~= oldEP or newGP ~= oldGP then
         -- change values
         GuildRosterSetOfficerNote(i, newEP .. "," .. newGP)
-        -- refresh member that we just updated
+        -- refresh the member that we just updated
         self:GuildGetMemberInfo(playerName, false)
     end
 end
@@ -91,9 +91,9 @@ function EPGPR:GuildChangeEPGP(percent)
 end
 
 -- Add EP to all names from the list that are found in the guild
--- names has to be in the format "{[nameN] = ratioN, [nameM] = ratioM, ...}
+-- names have to be in the format "{[nameN] = ratioN, [nameM] = ratioM, ...}
 function EPGPR:GuildAddEP(names, EP)
-    -- filter out all alts on the list and converge their EPRating to their mains
+    -- filter out all alts on the list and move their EPRating to their mains
     local alts = self.config.alts.list or {}
     for alt, main in pairs(alts) do -- iterate through alts table
         if names[alt] then -- if there is alt in the list
@@ -102,7 +102,7 @@ function EPGPR:GuildAddEP(names, EP)
         end
     end
     self:GuildRefreshRoster()
-    -- change all people in the list EP by the ratio
+    -- change all EP of people in the list by the ratio
     for name, ratio in pairs(names) do
         -- we don't need to consider alts here as they are already replaced by their mains
         self:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)

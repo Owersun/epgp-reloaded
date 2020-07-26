@@ -5,16 +5,16 @@ local function getItemId(link)
     return id and tonumber(id) or nil
 end
 
--- many UI addons that introduce tooltip under cursor implement it the way, the tooltip is constantly redrawn under the cursor
--- to reduce pressure on constant calculation of GP we cache every item we see into memory
--- barely session cache will exceed hundred items, which is a good tradeoff between memory and cpu
+-- many UI addons that introduce tooltip under a cursor implement it the way, the tooltip is constantly redrawn when cursor is hovering
+-- to reduce pressure of constant GP calculations we cache every item we see into memory
+-- barely session cache would exceed a hundred items, which is a good tradeoff between memory and cpu
 local gpValues = {}
 
 -- Calculate GP value of an item from its link
 function EPGPR:ItemGPValue(itemLink)
     if gpValues[itemLink] then return gpValues[itemLink] end
     local _, link, rarity, ilvl, _, _, _, _, slot = GetItemInfo(itemLink)
-    -- override?
+    -- override from options?
     local id = getItemId(link)
     if self.config.item[id] then
         rarity, ilvl, slot = unpack(self.config.item[id])
@@ -54,7 +54,7 @@ function EPGPR:EncounterWon(encounterId)
     end
 end
 
--- Add name to the standby list
+-- Add the name to the standby list
 function EPGPR:StandbyAdd(name)
     local standbyList = self.config.standby.list or {}
     if standbyList[name] then SendChatMessage("You are already in the standby list", "WHISPER", nil, name); return; end
@@ -63,7 +63,7 @@ function EPGPR:StandbyAdd(name)
     SendChatMessage("You have been added to the standby list", "WHISPER", nil, name)
 end
 
--- Add history record and broadcast too all other apps in the guild
+-- Add a history record and broadcast too all apps in the guild
 function EPGPR:AddHistory(targetPlayer, comment, EP, GP)
     local author, timestamp = UnitName("player"), time()
     self:SaveHistoryRow(author, targetPlayer, comment, EP, GP, timestamp)
@@ -94,7 +94,7 @@ function EPGPR:GetBidderProperties(name)
     return nil
 end
 
--- Set connection alt-main
+-- Save a connection alt-main
 function EPGPR:SetAlt(alt, main)
     local altList = EPGPR.config.alts.list or {}
     -- main must be member of the guild
