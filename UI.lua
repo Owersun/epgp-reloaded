@@ -80,3 +80,13 @@ StaticPopupDialogs["EPGPR_CHANGE_GUILD_EPGP_POPUP"] = {
     hideOnEscape = true,
     preferredIndex = 3,
 }
+
+StaticPopupDialogs["EPGPR_ERROR_POPUP"] = {
+    text = "",
+    button1 = "Ok",
+    OnShow = function(self) self.text:SetText(self.data.text) end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}

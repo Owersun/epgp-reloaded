@@ -114,8 +114,21 @@ end
 -- Save a connection alt-main
 function EPGPR:SetAlt(alt, main)
     local altList = EPGPR.config.alts.list or {}
+    -- player can be alt of only one other player
+    if altList[alt] then
+        StaticPopup_Show("EPGPR_ERROR_POPUP", nil, nil, { text = ("Player \"%s\" is already set as alt of \"%s\""):format(alt, altList[alt]) })
+        return false
+    end
     -- main must be member of the guild
-    if main and not self.State.guildRoster[main] then return false end
+    if main and not self.State.guildRoster[main] then
+        StaticPopup_Show("EPGPR_ERROR_POPUP", nil, nil, { text = ("Player \"%s\" is not found in the guild"):format(main) })
+        return false
+    end
+    -- main cannot be already an alt of someone else
+    if altList[main] then
+        StaticPopup_Show("EPGPR_ERROR_POPUP", nil, nil, { text = ("Player \"%s\" is set as alt of \"%s\""):format(main, altList[main]) })
+        return false
+    end
     EPGPR:ConfigSet({ alts = { list = false }})
     altList[alt] = main
     EPGPR:ConfigSet({ alts = { list = altList }})
