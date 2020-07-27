@@ -9,8 +9,8 @@ function EPGPR:ChatAnnounceLoot(itemLink, GP)
 end
 
 -- When encounter has been won and EP was awarded
-function EPGPR:ChatEncounterEPAwarded(name, EP)
-    SendChatMessage(name .. " has been defeated, " .. EP .. " EP is awarded to the raid", "GUILD")
+function EPGPR:ChatEncounterEPAwarded(name, EP, bonusEP)
+    SendChatMessage(("%s has been defeated, %s EP awarded to the raid"):format(name, bonusEP > 0 and (EP .. " + " .. bonusEP) or tostring(EP)), "GUILD")
 end
 
 -- When item has been given using the app

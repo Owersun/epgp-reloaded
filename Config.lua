@@ -11,6 +11,13 @@ end
 local defaultConfig = {
     general = {
         debug = false,
+        missingManBonus = false,
+    },
+    instance = {
+        [249] = { name = "Onyxia Lair", missingManBonus = false, EP = 1 },
+        [409] = { name = "Molten Core", missingManBonus = false, EP = 1 },
+        [469] = { name = "Black Wing Lair", missingManBonus = false, EP = 1 },
+        [531] = { name = "Ahn'Qiraj", missingManBonus = false, EP = 1 },
     },
     encounter = {
         -- moltern core
@@ -152,6 +159,35 @@ local configOptions = {
                     type = "toggle",
                 }
             }
+        },
+        instance = {
+            name = "Instances",
+            type = "group",
+            set = function(info, val) EPGPR:ConfigSet({ instance = { [info.arg[1]] = { [info.arg[2]] = val } } }) end,
+            get = function(info)
+                local option = EPGPR.config.instance[info.arg[1]][info.arg[2]]
+                return info.type == "input" and tostring(option) or option
+            end,
+            args = {
+                EnableMissingManBonus = {
+                    set = function(_, val) EPGPR:ConfigSet({ missingManBonus = val }) end,
+                    get = function(_) return EPGPR.config.missingManBonus end,
+                    name = "Enable Missing Man Bonus", type = "toggle", order = 1
+                },
+                MissingManBonus = { name = "Missing Man Bonus", type = "header", order = 2 },
+                Onyxia = { name = "Onyxia's Lair", type = "description", order = 3, width = 2 },
+                OnyxiaBonus = { arg = { 249, "missingManBonus" }, name = "award", type = "toggle", order = 4, width = 0.5 },
+                OnyxiaBonusBonusEP = { arg = { 249, "EP" }, name = "EP", type = "input", order = 5, width = 0.5 },
+                MoltenCore = { name = "Molten Core", type = "description", order = 6, width = 2 },
+                MoltenCoreBonus = { arg = { 409, "missingManBonus" }, name = "award", type = "toggle", order = 7, width = 0.5 },
+                MoltenCoreBonusEP = { arg = { 409, "EP" }, name = "EP", type = "input", order = 8, width = 0.5 },
+                BlackWingLair = { name = "Black Wing Lair", type = "description", order = 9, width = 2 },
+                BlackWingLairBonus = { arg = { 469, "missingManBonus" }, name = "award", type = "toggle", order = 10, width = 0.5 },
+                BlackWingLairBonusEP = { arg = { 469, "EP" }, name = "EP", type = "input", order = 11, width = 0.5 },
+                ["Ahn'Qiraj"] = { name = "Ahn'Qiraj", type = "description", order = 12, width = 2 },
+                ["Ahn'QirajBonus"] = { arg = { 531, "missingManBonus" }, name = "award", type = "toggle", order = 13, width = 0.5 },
+                ["Ahn'QirajBonusEP"] = { arg = { 531, "EP" }, name = "EP", type = "input", order = 14, width = 0.5 },
+            },
         },
         encounter = {
             name = "Encounters",
@@ -321,6 +357,7 @@ function EPGPR:ConfigSetup()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(appName, configOptions)
     local ACD = LibStub("AceConfigDialog-3.0")
     ACD:AddToBlizOptions(appName, appName, nil, "general")
+    ACD:AddToBlizOptions(appName, "Instances", appName, "instance")
     ACD:AddToBlizOptions(appName, "Encounters", appName, "encounter")
     ACD:AddToBlizOptions(appName, "Gear Points", appName, "GP")
     ACD:AddToBlizOptions(appName, "Bidding", appName, "bidding")

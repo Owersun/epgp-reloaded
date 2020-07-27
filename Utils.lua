@@ -1,4 +1,4 @@
-local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, time, MAX_RAID_MEMBERS
+local EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, GetInstanceInfo, time, MAX_RAID_MEMBERS = EPGPR, SendChatMessage, GetRaidRosterInfo, GetItemInfo, GetInstanceInfo, time, MAX_RAID_MEMBERS
 
 local function getItemId(link)
     local id = string.match(link, '^|c%x+|Hitem:(%d+):')
@@ -32,6 +32,22 @@ function EPGPR:ItemDistributed(player, itemLink, GP)
     self:AddHistory(player, itemLink, nil, GP)
 end
 
+-- There is a possibility on every encounter end, that basic EP is going to have bonus additions
+function EPGPR:calculateEncounterBonus(members)
+    -- calculate empty slots in the raid, and, if bonus for empty slots is enabled, return the amount of bonus EP for this instance, or 0
+    local function calculateMissingManBonus(maxInstancePlayers, instanceConfig)
+        if not self.config.missingManBonus or not instanceConfig.missingManBonus then return 0 end
+        local count = 0
+        for _ in pairs(members) do count = count + 1 end
+        return math.max(0, maxInstancePlayers - count) * instanceConfig.EP
+    end
+
+    local _, _, _, _, maxPlayers, _, _, instanceID, _, _ = GetInstanceInfo()
+    local instanceConfig = self.config.instance[instanceID] or {}
+
+    return calculateMissingManBonus(maxPlayers or 0, instanceConfig)
+end
+
 -- Encounter has been won
 function EPGPR:EncounterWon(encounterId)
     local encounter = self.config.encounter[encounterId]
@@ -48,9 +64,10 @@ function EPGPR:EncounterWon(encounterId)
             local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
             if name and online then names[name] = 1 end
         end
-        self:GuildAddEP(names, encounter.EP)
-        self:ChatEncounterEPAwarded(encounter.name, encounter.EP)
-        self:AddHistory("RAID", encounter.name, encounter.EP, nil)
+        local bonusEP = EPGPR:calculateEncounterBonus(names)
+        self:GuildAddEP(names, encounter.EP + bonusEP)
+        self:ChatEncounterEPAwarded(encounter.name, encounter.EP, bonusEP)
+        self:AddHistory("RAID", encounter.name, encounter.EP + bonusEP, nil)
     end
 end
 
