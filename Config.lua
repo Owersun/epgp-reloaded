@@ -78,6 +78,8 @@ local defaultConfig = {
         [20932] = { 4, 78, 'INVTYPE_SHOULDER' },
         -- Husk of the Old God
         [20933] = { 4, 88, 'INVTYPE_CHEST' },
+        -- Eye of C'Thun
+        [21221] = { 4, 88, 'INVTYPE_TRINKET' },
         -- Head of Onyxia Hore
         [18422] = { 4, 74, 'INVTYPE_TRINKET' },
         -- Head of Onyxia Alliance
