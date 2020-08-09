@@ -115,7 +115,7 @@ end
 function EPGPR:SetAlt(alt, main)
     local altList = EPGPR.config.alts.list or {}
     -- player can be alt of only one other player
-    if altList[alt] then
+    if main and altList[alt] then
         StaticPopup_Show("EPGPR_ERROR_POPUP", nil, nil, { text = ("Player \"%s\" is already set as alt of \"%s\""):format(alt, altList[alt]) })
         return false
     end
@@ -125,7 +125,7 @@ function EPGPR:SetAlt(alt, main)
         return false
     end
     -- main cannot be already an alt of someone else
-    if altList[main] then
+    if main and altList[main] then
         StaticPopup_Show("EPGPR_ERROR_POPUP", nil, nil, { text = ("Player \"%s\" is set as alt of \"%s\""):format(main, altList[main]) })
         return false
     end
