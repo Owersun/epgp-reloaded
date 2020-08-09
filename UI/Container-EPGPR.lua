@@ -1,4 +1,4 @@
-local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack
+local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS, IsInRaid = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS, IsInRaid
 
 local function tabStangings(container)
     container:SetLayout("List")
@@ -29,7 +29,43 @@ local function tabStangings(container)
 end
 
 local function tabRaid(container)
+    container:SetLayout("List")
 
+    EPGPR:GuildRefreshRoster()
+    local group = AceGUI:Create("SimpleGroup")
+    group:SetLayout("Fill")
+    group:SetFullWidth(true)
+    group:SetHeight(280)
+    local isInRaid = IsInRaid("player")
+    local raidList = {}
+    if isInRaid then
+        for n = 1, MAX_RAID_MEMBERS do
+            local name, _, _, _, _, playerClass, _, online = GetRaidRosterInfo(n)
+            if name then
+                local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+                local color = online and classColor or 'bbbbbbbb'
+                local _, i, playerRank, _, EP, GP, PR = EPGPR:GuildGetMemberInfo(name, true)
+                if i ~= nil then
+                    table.insert(raidList, "|c" .. color .. name .. "|r (" .. playerRank .. ") " .. ": EP/GP " .. EP .. "/" .. GP .. ", PR " .. PR)
+                else
+                    table.insert(raidList, "|c" .. color .. name .. "|r (non-guild member)")
+                end
+            end
+        end
+    end
+    local frame = AceGUI:Create("ScrollList")
+    frame:SetLayout("List")
+    frame:SetItems(raidList)
+    group:AddChild(frame)
+    container:AddChild(group)
+
+    local changeRaidEP = AceGUI:Create("Button")
+    changeRaidEP:SetText("Add/Remove Raid EP")
+    changeRaidEP:SetCallback("OnClick", function()
+        StaticPopup_Show("EPGPR_CHANGE_RAID_EP_POPUP")
+    end)
+    changeRaidEP:SetDisabled(not isInRaid)
+    container:AddChild(changeRaidEP)
 end
 
 local function tabStandby(container)
@@ -73,6 +109,7 @@ local function tabStandby(container)
     local alts = AceGUI:Create("ScrollList")
     alts:SetLayout("List")
     local function refreshAltsList()
+        EPGPR:GuildRefreshRoster()
         local altsList = {}
         altsIndex = {}
         for alt, main in pairs(EPGPR.config.alts.list or {}) do

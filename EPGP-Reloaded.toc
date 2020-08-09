@@ -23,6 +23,7 @@ Core.lua
 Utils.lua
 Config.lua
 Guild.lua
+Raid.lua
 Events.lua
 Chat.lua
 Communication.lua

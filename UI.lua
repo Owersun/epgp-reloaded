@@ -68,7 +68,8 @@ StaticPopupDialogs["EPGPR_CHANGE_GUILD_EPGP_POPUP"] = {
     end,
     EditBoxOnTextChanged = function (self, data) -- careful! 'self' here points to the editbox, not the dialog
         local text = self:GetText()
-        if (tostring(tonumber(text)) == text) then
+        local value = tonumber(text)
+        if (tostring(value) == text and value ~= 0) then
             self:GetParent().button1:Enable()
         else
             self:GetParent().button1:Disable()
@@ -76,7 +77,33 @@ StaticPopupDialogs["EPGPR_CHANGE_GUILD_EPGP_POPUP"] = {
     end,
     hasEditBox = true,
     timeout = 0,
-    whileDead = false,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+StaticPopupDialogs["EPGPR_CHANGE_RAID_EP_POPUP"] = {
+    text = "Add/Remove Raid EP (negative removes, positive adds)",
+    button1 = "Award",
+    button2 = "Cancel",
+    OnShow = function (self, data)
+        self.editBox:SetText("0")
+    end,
+    OnAccept = function(self)
+        EPGPR:RaidAddEP(self.editBox:GetText())
+    end,
+    EditBoxOnTextChanged = function (self, data) -- careful! 'self' here points to the editbox, not the dialog
+        local text = self:GetText()
+        local value = tonumber(text)
+        if (tostring(value) == text and value ~= 0) then
+            self:GetParent().button1:Enable()
+        else
+            self:GetParent().button1:Disable()
+        end
+    end,
+    hasEditBox = true,
+    timeout = 0,
+    whileDead = true,
     hideOnEscape = true,
     preferredIndex = 3,
 }

@@ -8,6 +8,11 @@ function EPGPR:ChatAnnounceLoot(itemLink, GP)
     SendChatMessage("/roll for Bank spec / free", "RAID")
 end
 
+-- When raid EP has been given/taken
+function EPGPR:ChatRaidEPGiven(EP)
+    SendChatMessage(("%d EP %s the raid"):format(math.abs(EP), EP > 0 and "added to" or "removed from"), "RAID")
+end
+
 -- When encounter has been won and EP was awarded
 function EPGPR:ChatEncounterEPAwarded(name, EP, bonusEP)
     SendChatMessage(("%s has been defeated, %s EP awarded to the raid"):format(name, bonusEP > 0 and (EP .. " + " .. bonusEP) or tostring(EP)), "GUILD")
