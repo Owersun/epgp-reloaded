@@ -170,9 +170,13 @@ local function tabExport(container)
     exportGroup:AddChild(scroll)
     container:AddChild(exportGroup)
 
-    local roster = {}
-    for name, player in pairs(EPGPR.State.guildRoster) do
-        roster[player[1]] = '["' .. name .. '","' .. player[2] .. '","' .. player[3] .. '",' .. player[4] .. ',' .. player[5] .. ',' .. player[6] .. ']'
+    local roster, names = {}, {}
+    for k, _ in pairs(EPGPR.State.guildRoster) do table.insert(names, k) end
+    table.sort(names)
+    -- use the keys to retrieve the values in the sorted order
+    for _, name in ipairs(names) do
+        local player = EPGPR.State.guildRoster[name]
+        table.insert(roster, '["' .. name .. '","' .. player[2] .. '","' .. player[3] .. '",' .. player[4] .. ',' .. player[5] .. ',' .. player[6] .. ']')
     end
     local json = '[' .. table.concat(roster, ',') .. ']'
     box:SetText(json)
