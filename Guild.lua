@@ -86,6 +86,7 @@ function EPGPR:GuildChangeEPGP(percent)
         local newGP = floor(max(basegp, oldGP * (100 + percent) / 100))
         if newEP ~= oldEP or newGP ~= oldGP then GuildRosterSetOfficerNote(i, newEP .. "," .. newGP) end
     end
+    self:GuildRefreshRoster()
     self:ChatGuildEPGPChanged(percent)
     self:AddHistory("GUILD", "Guild EPGP change " .. percent .. "%", nil, nil)
 end
@@ -97,7 +98,7 @@ function EPGPR:GuildAddEP(names, EP)
     local alts = self.config.alts.list or {}
     for alt, main in pairs(alts) do -- iterate through alts table
         if names[alt] then -- if there is alt in the list
-            names[main] = math.max(names[main] or 0, names[alt]) -- assign biggest EPRatio between alt and main to the main
+            names[main] = max(names[main] or 0, names[alt]) -- assign biggest EPRatio between alt and main to the main
             names[alt] = nil -- remove the alt from the list
         end
     end
@@ -105,6 +106,22 @@ function EPGPR:GuildAddEP(names, EP)
     -- change all EP of people in the list by the ratio
     for name, ratio in pairs(names) do
         -- we don't need to consider alts here as they are already replaced by their mains
-        self:GuildChangeMemberEPGP(name, math.floor(EP * ratio), nil, false)
+        self:GuildChangeMemberEPGP(name, floor(EP * ratio), nil, false)
     end
+end
+
+-- Apply increased base guild GP
+function EPGPR:GuildApplyBaseGP()
+    local basegp, guildMembers, n = self.config.GP.basegp, GetNumGuildMembers(), 0
+    for i = 1, guildMembers do
+        local _, playerData = guildFetchMember(i)
+        local _, _, _, EP, oldGP, _ = unpack(playerData)
+        local newGP = max(basegp, oldGP)
+        if newGP ~= oldGP then
+            GuildRosterSetOfficerNote(i, EP .. "," .. newGP)
+            n = n + 1
+        end
+    end
+    self:GuildRefreshRoster()
+    self:Print("Base GP changed for " .. tostring(n) .. " members")
 end
