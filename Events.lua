@@ -1,7 +1,7 @@
-local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem
+local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem, UnitName = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem, UnitName
 
 -- WoW events we hook to, when activated
-local events = { "LOOT_OPENED", "LOOT_CLOSED", "LOOT_SLOT_CLEARED", "ENCOUNTER_END", "GROUP_ROSTER_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_WHISPER" }
+local events = { "LOOT_OPENED", "LOOT_CLOSED", "LOOT_SLOT_CLEARED", "ENCOUNTER_END", "GROUP_ROSTER_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_WHISPER", "CHAT_MSG_LOOT" }
 -- Our internal messages we dispatch and listen to
 local messages = { "EPGPR_ANNOUNCEMENT_START", "EPGPR_ANNOUNCEMENT_CANCEL" }
 
@@ -106,4 +106,12 @@ end
 -- Announcement has been cancelled (sent by the same button in state "Cancel")
 function EPGPR:EPGPR_ANNOUNCEMENT_CANCEL(_)
     self:UILootOverview():Fire("AnnounceSlot", nil)
+end
+
+-- Temporary function to track Ahn'Quiraj stash keys looters
+function EPGPR:CHAT_MSG_LOOT(_, text, _, _, _, playerName2, _, _, _, _, _, _, _, _, _, _, _, _)
+    local item = text:match("|c%x%x%x%x%x%x%x%x|Hitem:21762.+|h|r")
+    if item and playerName2 ~= UnitName("player") then
+        self:Print((">>>>>>>>>> [|cffff0000|Hplayer:%s:WHISPER:%s|h%s|h|r] looted %s <<<<<<<<<<"):format(playerName2, playerName2, playerName2, item));
+    end
 end
