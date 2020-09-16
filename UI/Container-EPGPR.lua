@@ -71,15 +71,14 @@ end
 local function tabStandby(container)
     container:SetLayout("List")
 
-    local standbyIndex, altsIndex
-
+    local standbyIndex
     EPGPR:GuildRefreshRoster()
 
     -- Standby list
     local standbyGroup = AceGUI:Create("SimpleGroup")
     standbyGroup:SetLayout("Fill")
     standbyGroup:SetFullWidth(true)
-    standbyGroup:SetHeight(140)
+    standbyGroup:SetHeight(320)
     local standby = AceGUI:Create("ScrollList")
     standby:SetLayout("List")
     local function refreshStandbyList()
@@ -100,12 +99,19 @@ local function tabStandby(container)
     end)
     standbyGroup:AddChild(standby)
     container:AddChild(standbyGroup)
+end
+
+local function tabAlts(container)
+    container:SetLayout("List")
+
+    local altsIndex
+    EPGPR:GuildRefreshRoster()
 
     -- Alts list
     local altsGroup = AceGUI:Create("SimpleGroup")
     altsGroup:SetLayout("Fill")
     altsGroup:SetFullWidth(true)
-    altsGroup:SetHeight(140)
+    altsGroup:SetHeight(280)
     local alts = AceGUI:Create("ScrollList")
     alts:SetLayout("List")
     local function refreshAltsList()
@@ -182,12 +188,18 @@ local function tabExport(container)
     box:SetText(json)
 end
 
+local function tabAbout(container)
+
+end
+
 local function selectTab(container, event, tab)
     container:ReleaseChildren()
     if tab == "Standings" then tabStangings(container)
     elseif tab == "Raid" then tabRaid(container)
     elseif tab == "Standby" then tabStandby(container)
+    elseif tab == "Alts" then tabAlts(container)
     elseif tab == "Export" then tabExport(container)
+    elseif tab == "About" then tabAbout(container)
     end
 end
 
@@ -207,8 +219,10 @@ EPGPR.UI.EPGPR = function()
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
     local tab3 = { text = "Standby", value = "Standby" }
-    local tab4 = { text = "Export", value = "Export" }
-    tabGroup:SetTabs({ tab1, tab2, tab3, tab4 })
+    local tab4 = { text = "Alts", value = "Alts" }
+    local tab5 = { text = "Export", value = "Export" }
+    local tab6 = { text = "About", value = "About" }
+    tabGroup:SetTabs({ tab1, tab2, tab3, tab4, tab5, tab6 })
     tabGroup:SetCallback("OnGroupSelected", selectTab)
     tabGroup:SelectTab("Standings")
     window:AddChild(tabGroup)
