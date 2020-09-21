@@ -1,0 +1,224 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+    <Button name="EPGPRScrollListButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="299" y="16"/>
+        </Size>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture name="$parentBarTexture" hidden="true" file="Interface\TargetingFrame\UI-StatusBar" parentKey="barTexture">
+                    <Size>
+                        <AbsDimension x="10" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="60" y="0"/>
+                    </Anchors>
+                    <Color r="0" g="1" b="0" a="0.1"/>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString name="$parentString1" inherits="GameFontHighlightSmall" wordwrap="false" hidden="false" parentKey="string1">
+                    <Size>
+                        <AbsDimension x="10" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentString2" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string2">
+                    <Size>
+                        <AbsDimension x="10" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentString3" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string3">
+                    <Size>
+                        <AbsDimension x="10" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentString4" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string4">
+                    <Size>
+                        <AbsDimension x="10" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentString5" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string5">
+                    <Size>
+                        <AbsDimension x="10" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentHeaderButton" setAllPoints="true" parentKey="header" hidden="true">
+                <Layers>
+                    <Layer level="BORDER">
+                        <Texture name="$parentLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="leftEdge">
+                            <Size x="76" y="16"/>
+                            <Anchors>
+                                <Anchor point="LEFT" x="0" y="0"/>
+                            </Anchors>
+                            <TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
+                        </Texture>
+                        <Texture name="$parentRight" file="Interface\Buttons\CollapsibleHeader" parentKey="rightEdge">
+                            <Size x="76" y="16"/>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="147" y="0"/>
+                            </Anchors>
+                            <TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
+                        </Texture>
+                    </Layer>
+                    <Layer level="BACKGROUND">
+                        <Texture file="Interface\Buttons\CollapsibleHeader" parentKey="middle">
+                            <Size x="0" y="16"/>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" x="-20" y="0"/>
+                                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" x="20" y="0"/>
+                            </Anchors>
+                            <TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
+                        </Texture>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <Texture name="$parentExpandedIcon" parentKey="expandedIcon" inherits="Char-Stat-Minus">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentCollapsedIcon" parentKey="collapsedIcon" inherits="Char-Stat-Plus">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="$parentIcon" parentKey="icon">
+                            <Size x="14" y="14"/>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" x="26" y="0"/>
+                            </Anchors>
+                            <TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>
+                        </Texture>
+                        <FontString name="$parentName" inherits="GameFontNormalSmall" parentKey="name">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="$parentLeft" x="46" y="1"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button text="GUILD_VIEW_ALL_RECIPES_LINK" parentKey="allRecipes">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeTo="$parentRight" x="-10" y="1"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                local fontString = self:GetFontString();
+                                self:SetHeight(fontString:GetHeight() + 4);
+                                self:SetWidth(fontString:GetWidth() + 4);
+                            </OnLoad>
+                            <OnClick>
+                                ViewGuildRecipes(self:GetParent().skillID);
+                            </OnClick>
+                        </Scripts>
+                        <ButtonText>
+                            <Anchors>
+                                <Anchor point="RIGHT" x="-2" y="0"/>
+                            </Anchors>
+                            <Color r="0.973" g="0.937" b="0.580"/>
+                        </ButtonText>
+                        <NormalFont style="GameFontNormalSmall"/>
+                    </Button>
+                </Frames>
+                <Scripts>
+                    <!-- <OnClick function="EPGPRScrollListHeader_OnClick"/> -->
+                    <OnMouseDown>
+                        if ( self:IsEnabled() ) then
+                        self.leftEdge:SetPoint("LEFT", 1, -1);
+                        end
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self.leftEdge:SetPoint("LEFT", 0, 0);
+                    </OnMouseUp>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+            </OnLoad>
+            <!-- <OnClick function="EPGPRScrollListButton_OnClick"/> -->
+        </Scripts>
+        <HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
+    </Button>
+    <Button name="EPGPRScrollListColumnButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="10" y="24"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+                    <Size>
+                        <AbsDimension x="5" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                    <TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+                </Texture>
+                <Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+                    <Size>
+                        <AbsDimension x="53" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+                </Texture>
+                <Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+                    <Size>
+                        <AbsDimension x="4" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <!-- <OnClick function="EPGPRScrollList_SortByColumn"/> -->
+        </Scripts>
+        <ButtonText>
+            <Anchors>
+                <Anchor point="LEFT">
+                    <Offset>
+                        <AbsDimension x="8" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </ButtonText>
+        <NormalFont style="GameFontHighlightSmall"/>
+        <HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+            <Anchors>
+                <Anchor point="TOPLEFT" relativeTo="$parentLeft">
+                    <Offset>
+                        <AbsDimension x="-2" y="5"/>
+                    </Offset>
+                </Anchor>
+                <Anchor point="BOTTOMRIGHT" relativeTo="$parentRight">
+                    <Offset>
+                        <AbsDimension x="2" y="-7"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </HighlightTexture>
+    </Button>
+</Ui>
