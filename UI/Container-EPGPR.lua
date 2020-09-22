@@ -4,13 +4,13 @@ local function tabStangings(container)
     container:SetLayout("List")
 
     EPGPR:GuildRefreshRoster()
+
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
     group:SetHeight(284)
 
     local frame = AceGUI:Create("ScrollList")
-    frame:SetLayout("List")
     frame:SetColumns({
         { width = 140, name = "Name" },
         { width = 100, name = "Rank" },
@@ -41,13 +41,16 @@ local function tabRaid(container)
     container:SetLayout("List")
 
     EPGPR:GuildRefreshRoster()
+
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
     group:SetHeight(284)
 
     local frame = AceGUI:Create("ScrollList")
-    frame:SetLayout("List")
+    group:AddChild(frame)
+    container:AddChild(group)
+
     frame:SetColumns({
         { width = 140, name = "Name" },
         { width = 100, name = "Rank" },
@@ -55,8 +58,6 @@ local function tabRaid(container)
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
     })
-    group:AddChild(frame)
-    container:AddChild(group)
 
     local isInRaid = IsInRaid("player")
     local items = {}
@@ -90,6 +91,7 @@ local function tabStandby(container)
     container:SetLayout("List")
 
     local standbyIndex
+
     EPGPR:GuildRefreshRoster()
 
     -- Standby list
@@ -99,7 +101,9 @@ local function tabStandby(container)
     standbyGroup:SetHeight(304)
 
     local frame = AceGUI:Create("ScrollList")
-    frame:SetLayout("List")
+    standbyGroup:AddChild(frame)
+    container:AddChild(standbyGroup)
+
     frame:SetColumns({
         { width = 140, name = "Name" },
         { width = 100, name = "Rank" },
@@ -107,8 +111,6 @@ local function tabStandby(container)
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
     })
-    standbyGroup:AddChild(frame)
-    container:AddChild(standbyGroup)
 
     local function refreshStandbyList()
         local items = {}
@@ -132,6 +134,7 @@ local function tabAlts(container)
     container:SetLayout("List")
 
     local altsIndex
+
     EPGPR:GuildRefreshRoster()
 
     -- Alts list
@@ -141,7 +144,9 @@ local function tabAlts(container)
     altsGroup:SetHeight(284)
 
     local frame = AceGUI:Create("ScrollList")
-    frame:SetLayout("List")
+    altsGroup:AddChild(frame)
+    container:AddChild(altsGroup)
+
     frame:SetColumns({
         { width = 100, name = "Alt" },
         { width = 140, name = "Main" },
@@ -149,8 +154,6 @@ local function tabAlts(container)
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
     })
-    altsGroup:AddChild(frame)
-    container:AddChild(altsGroup)
 
     local function refreshAltsList()
         EPGPR:GuildRefreshRoster()
@@ -201,6 +204,7 @@ local function tabExport(container)
     container:SetLayout("Fill")
 
     EPGPR:GuildRefreshRoster()
+
     local exportGroup = AceGUI:Create("SimpleGroup")
     exportGroup:SetLayout("Fill")
     local scroll = AceGUI:Create("ScrollFrame")
@@ -230,15 +234,14 @@ local function tabAbout(container)
     local aboutGroup = AceGUI:Create("SimpleGroup")
     aboutGroup:SetLayout("Fill")
     aboutGroup:SetFullWidth(true)
+    container:AddChild(aboutGroup)
 
     local label = AceGUI:Create("Label")
     label:SetFont(label.label:GetFont(), 24)
     label:SetColor(1, 1, 0)
     label:SetText("\n\n\n\n\nОверсан / Оверскай\nПламегор - Firemaw")
-    aboutGroup:AddChild(label)
     label:SetJustifyH("CENTER")
-
-    container:AddChild(aboutGroup)
+    aboutGroup:AddChild(label)
 end
 
 local function selectTab(container, event, tab)
@@ -265,6 +268,8 @@ EPGPR.UI.EPGPR = function()
     -- Add tabs to the container
     local tabGroup = AceGUI:Create("TabGroup");
     tabGroup:SetLayout("Fill")
+    window:AddChild(tabGroup)
+
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
     local tab3 = { text = "Standby", value = "Standby" }
@@ -274,7 +279,6 @@ EPGPR.UI.EPGPR = function()
     tabGroup:SetTabs({ tab1, tab2, tab3, tab4, tab5, tab6 })
     tabGroup:SetCallback("OnGroupSelected", selectTab)
     tabGroup:SelectTab("Standings")
-    window:AddChild(tabGroup)
 
     return window
 end
