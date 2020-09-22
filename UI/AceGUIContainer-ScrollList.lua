@@ -143,15 +143,20 @@ Methods
 local methods = {
 
     ["OnAcquire"] = function(self)
+
     end,
+
+    --[[
+    ["OnHeightSet"] = function(self, height)
+        createRows(self, height)
+    end,
+    --]]
 
     ["OnRelease"] = function(self)
         self.offset = 0
         self.items = {}
         self.columns = {}
         self.rows = {}
-        self.scrollbar:Hide()
-        self.scrollbar:SetValue(0)
         self.rowsfactory:ReleaseAll()
         self.headerfactory:ReleaseAll()
     end,
