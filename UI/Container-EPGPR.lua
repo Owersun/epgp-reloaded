@@ -7,7 +7,7 @@ local function tabStangings(container)
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
-    group:SetHeight(280)
+    group:SetHeight(284)
     local items = {}
     for name, data in pairs(EPGPR.State.guildRoster or {}) do
         local _, playerRank, playerClass, EP, GP, PR = unpack(data)
@@ -17,8 +17,8 @@ local function tabStangings(container)
     local frame = AceGUI:Create("ScrollList")
     frame:SetLayout("List")
     frame:SetColumns({
-        { width = 140, name = "Name", justify = "LEFT" },
-        { width = 100, name = "Rank", justify = "LEFT" },
+        { width = 140, name = "Name" },
+        { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
@@ -42,7 +42,7 @@ local function tabRaid(container)
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
-    group:SetHeight(280)
+    group:SetHeight(284)
     local isInRaid = IsInRaid("player")
     local items = {}
     if isInRaid then
@@ -63,8 +63,8 @@ local function tabRaid(container)
     local frame = AceGUI:Create("ScrollList")
     frame:SetLayout("List")
     frame:SetColumns({
-        { width = 140, name = "Name", justify = "LEFT" },
-        { width = 100, name = "Rank", justify = "LEFT" },
+        { width = 140, name = "Name" },
+        { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
@@ -92,12 +92,12 @@ local function tabStandby(container)
     local standbyGroup = AceGUI:Create("SimpleGroup")
     standbyGroup:SetLayout("Fill")
     standbyGroup:SetFullWidth(true)
-    standbyGroup:SetHeight(310)
+    standbyGroup:SetHeight(304)
     local frame = AceGUI:Create("ScrollList")
     frame:SetLayout("List")
     frame:SetColumns({
-        { width = 140, name = "Name", justify = "LEFT" },
-        { width = 100, name = "Rank", justify = "LEFT" },
+        { width = 140, name = "Name" },
+        { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
@@ -132,12 +132,12 @@ local function tabAlts(container)
     local altsGroup = AceGUI:Create("SimpleGroup")
     altsGroup:SetLayout("Fill")
     altsGroup:SetFullWidth(true)
-    altsGroup:SetHeight(280)
+    altsGroup:SetHeight(284)
     local frame = AceGUI:Create("ScrollList")
     frame:SetLayout("List")
     frame:SetColumns({
-        { width = 100, name = "Alt", justify = "LEFT" },
-        { width = 140, name = "Main", justify = "LEFT" },
+        { width = 100, name = "Alt" },
+        { width = 140, name = "Main" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },

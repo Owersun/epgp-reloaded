@@ -26,58 +26,84 @@ local function configureScrollbar(self)
     scrollbar:Show()
 end
 
-local function drawItems(self)
-    local items, rows = self.items, self.rows
-    for i = 1, #rows do
-        local item = items[i + self.offset]
-        if item then for n = 1, #item do
-            rows[i]["string" .. n]:SetText(item[n])
-        end end
+-- callback when header button is clicked
+local function headerClick(self, i)
+
+end
+
+-- put buttons on the header
+local function drawHeader(self)
+    local offset = 0
+    for i, config in ipairs(self.columns) do
+        local button = self.headerfactory:Acquire()
+        button:SetWidth(config.width)
+        button.Middle:SetWidth(config.width - 9)
+        button:SetPoint("TOPLEFT", offset, 0)
+        button:SetText(config.name)
+        button:SetScript("OnClick", function() headerClick(self, i) end)
+        button:Show()
+        -- button:SetJustifyH(config.justify or "LEFT")
+        offset = offset + config.width
     end
 end
 
--- Manage rows in the scrollframe, create missing amount, or remove excessive amount
+-- Fill rows with items
+local function drawItems(self)
+    local items, rows = self.items, self.rows
+    for i, row in ipairs(rows) do
+        local itemIndex = i + self.offset
+        local item = items[itemIndex]
+        if item then -- show item, if there is one
+            for n, text in ipairs(item) do
+                row["string" .. n]:SetText(text)
+            end
+        else -- hide row if there is no item
+            row:Hide()
+        end
+    end
+end
+
+-- Called when row that is a button is clicked
+local function rowClick(self, i)
+    self:Fire("OnRowClick", i + self.offset)
+end
+
+-- Manage rows in the content frame, create missing amount, or remove excessive amount
 local function createRows(self)
-    local rowHeight = self.rowHeight
+    local rowHeight, hasRows = self.rowHeight, #self.rows
     local totalRows = math.ceil(self.content:GetHeight() / rowHeight)
     local needRows = math.min(#self.items, totalRows)
-    local hasRows = #self.rows
 
     -- We already have exactly as much rows as we need
     if hasRows == needRows then return end
 
     -- Add rows
+    local width = self.content:GetWidth()
     if needRows > hasRows then
         for i = hasRows + 1, needRows do
             local row = self.rowsfactory:Acquire()
-            row:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -1 * i * rowHeight)
-            row:SetWidth(self.content:GetWidth())
+            row:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -1 * i * rowHeight + rowHeight)
+            row:SetWidth(width)
             local offset = 0
-            if #self.columns > 0 then for n = 1, #self.columns do
-                local string, config = row["string" .. n], self.columns[n]
-                string:SetWidth(config.width)
+            for n, column in ipairs(self.columns) do
+                local string = row["string" .. n]
+                string:SetWidth(column.width)
                 string:SetPoint("LEFT", offset, 0)
-                string:SetJustifyH(config.justify or "LEFT")
+                string:SetJustifyH(column.justify or "LEFT")
                 string:Show()
-                offset = offset + config.width
-            end end
+                offset = offset + column.width
+            end
+            row:SetScript("OnClick", function() rowClick(self, i) end)
             row:Show()
             table.insert(self.rows, row)
-            --[[
-            row = AceGUI:Create("InteractiveLabel")
-            row:SetFullWidth(true)
-            local fontFace = row.label:GetFont()
-            row:SetFont(fontFace, rowHeight)
-            row.highlight:SetColorTexture(1, 1, 1, 0.1)
-            row:SetCallback("OnClick", function() self:Fire("OnRowClick", i + self.offset) end)
-            self:AddChild(row)
-            ]]--
         end
         -- redraw rows content as we added few
         drawItems(self)
     -- Remove rows
     else
         for i = hasRows, needRows + 1, -1 do
+            self.rows[i]:Hide() -- hide
+            self.rows[i]:SetParent(nil) -- release
             table.remove(self.rows, i)
         end
     end
@@ -97,18 +123,18 @@ end
 Scripts
 -------------------------------------------------------------------------------]]
 
-local function ScrollFrame_OnMouseWheel(scrollframe, value)
-    local widget = scrollframe.obj
-    local newOffset = widget.offset - value * #(widget.rows or {})
+local function Content_OnMouseWheel(frame, value)
+    local widget = frame.obj
+    local newOffset = widget.offset - value * #widget.rows
     scrollTo(widget, newOffset)
 end
 
-local function ScrollFrame_OnSizeChanged(scrollframe)
-    createRows(scrollframe.obj)
+local function Content_OnSizeChanged(frame)
+    createRows(frame.obj)
 end
 
-local function ScrollBar_OnScrollValueChanged(scrollbar, value)
-    scrollTo(scrollbar.obj, value)
+local function ScrollBar_OnScrollValueChanged(frame, value)
+    scrollTo(frame.obj, value)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -117,15 +143,17 @@ Methods
 local methods = {
 
     ["OnAcquire"] = function(self)
-        self.scrollbar:Hide()
-        self.scrollbar:SetValue(0)
     end,
 
     ["OnRelease"] = function(self)
-        self.items = {}
         self.offset = 0
+        self.items = {}
+        self.columns = {}
         self.rows = {}
+        self.scrollbar:Hide()
+        self.scrollbar:SetValue(0)
         self.rowsfactory:ReleaseAll()
+        self.headerfactory:ReleaseAll()
     end,
 
     ["SetItems"] = function(self, items)
@@ -136,6 +164,7 @@ local methods = {
 
     ["SetColumns"] = function(self, config)
         self.columns = config
+        drawHeader(self)
     end
 
 }
@@ -146,41 +175,44 @@ Constructor
 local function Constructor()
     local frame = CreateFrame("Frame", nil, UIParent)
 
-    local scrollframe = CreateFrame("ScrollFrame", nil, frame)
-    scrollframe:SetPoint("TOPLEFT")
-    scrollframe:SetPoint("BOTTOMRIGHT")
-    scrollframe:EnableMouseWheel(true)
-    scrollframe:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel)
-    scrollframe:SetScript("OnSizeChanged", ScrollFrame_OnSizeChanged)
+    local header = CreateFrame("Frame", nil, frame)
+    header:SetPoint("TOPLEFT")
+    header:SetPoint("TOPRIGHT")
+    header:SetHeight(24)
 
-    local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollList%dScrollBar"):format(AceGUI:GetNextWidgetNum(Type)), scrollframe, "UIPanelScrollBarTemplate")
-    scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 4, -16)
-    scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 4, 16)
+    local content = CreateFrame("Frame", nil, frame)
+    content:SetPoint("TOPLEFT", header, "BOTTOMLEFT")
+    content:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -16, 0)
+    content:EnableMouseWheel(true)
+    content:SetScript("OnMouseWheel", Content_OnMouseWheel)
+    content:SetScript("OnSizeChanged", Content_OnSizeChanged)
+
+    local scrollbar = CreateFrame("Slider", nil, frame, "UIPanelScrollBarTemplate")
+    scrollbar:Hide()
+    scrollbar:SetValue(0)
+    scrollbar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -16)
+    scrollbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
     -- set the script as the last step, so it doesn't fire yet
     scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
 
-    local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-    scrollbg:SetAllPoints(scrollbar)
-    scrollbg:SetColorTexture(0, 0, 0, 0.4)
+    -- local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
+    -- scrollbg:SetAllPoints(scrollbar)
+    -- scrollbg:SetColorTexture(0, 0, 0, 0.4)
 
-    -- Container Support
-    local content = CreateFrame("Frame", nil, scrollframe)
-    scrollframe:SetScrollChild(content)
-    content:SetPoint("TOPLEFT")
-    content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -20, 0)
-
-    -- Pool of rows that each scroll container can consume
+    -- Pool of rows that scroll container can consume
     local rowsfactory = CreateFramePool("Button", content, "EPGPRScrollListButtonTemplate")
+    local headerfactory = CreateFramePool("Button", header, "EPGPRScrollListColumnButtonTemplate")
 
     local widget = {
-        rowHeight   = 16,
+        rowHeight   = 20,
         frame       = frame,
-        scrollframe = scrollframe,
         scrollbar   = scrollbar,
+        header      = header,
         content     = content,
         columns     = {},
+        headerfactory = headerfactory,
         items       = {},
         rows        = {},
         rowsfactory = rowsfactory,
@@ -190,7 +222,7 @@ local function Constructor()
     for method, func in pairs(methods) do
         widget[method] = func
     end
-    scrollframe.obj, scrollbar.obj = widget, widget
+    content.obj, scrollbar.obj = widget, widget
 
     return AceGUI:RegisterAsContainer(widget)
 end
