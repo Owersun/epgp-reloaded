@@ -123,13 +123,13 @@ end
 Scripts
 -------------------------------------------------------------------------------]]
 
-local function Content_OnMouseWheel(frame, value)
+local function ScrollFrame_OnMouseWheel(frame, value)
     local widget = frame.obj
     local newOffset = widget.offset - value * #widget.rows
     scrollTo(widget, newOffset)
 end
 
-local function Content_OnSizeChanged(frame)
+local function ScrollFrame_OnSizeChanged(frame)
     createRows(frame.obj)
 end
 
@@ -179,26 +179,27 @@ local function Constructor()
     header:SetPoint("TOPRIGHT")
     header:SetHeight(24)
 
-    local content = CreateFrame("Frame", nil, frame)
-    content:SetPoint("TOPLEFT", header, "BOTTOMLEFT")
-    content:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -16, 0)
-    content:EnableMouseWheel(true)
-    content:SetScript("OnMouseWheel", Content_OnMouseWheel)
-    content:SetScript("OnSizeChanged", Content_OnSizeChanged)
+    local scrollframe = CreateFrame("ScrollFrame", nil, frame)
+    scrollframe:SetPoint("TOPLEFT", header, "BOTTOMLEFT")
+    scrollframe:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
+    scrollframe:EnableMouseWheel(true)
+    scrollframe:SetScript("OnMouseWheel", ScrollFrame_OnMouseWheel)
+    scrollframe:SetScript("OnSizeChanged", ScrollFrame_OnSizeChanged)
 
-    local scrollbar = CreateFrame("Slider", nil, frame, "UIPanelScrollBarTemplate")
+    local content = CreateFrame("Frame", nil, scrollframe)
+    scrollframe:SetScrollChild(content)
+    content:SetPoint("TOPLEFT")
+    content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -16, 0)
+
+    local scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate")
     scrollbar:Hide()
     scrollbar:SetValue(0)
-    scrollbar:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", 0, -16)
-    scrollbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 16)
+    scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 0, -16)
+    scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
     -- set the script as the last step, so it doesn't fire yet
     scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
-
-    -- local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
-    -- scrollbg:SetAllPoints(scrollbar)
-    -- scrollbg:SetColorTexture(0, 0, 0, 0.4)
 
     -- Pool of rows that scroll container can consume
     local rowsfactory = CreateFramePool("Button", content, "EPGPRScrollListButtonTemplate")
@@ -207,6 +208,7 @@ local function Constructor()
     local widget = {
         rowHeight   = 20,
         frame       = frame,
+        scrollframe = scrollframe,
         scrollbar   = scrollbar,
         header      = header,
         content     = content,
@@ -221,7 +223,7 @@ local function Constructor()
     for method, func in pairs(methods) do
         widget[method] = func
     end
-    content.obj, scrollbar.obj = widget, widget
+    scrollframe.obj, scrollbar.obj = widget, widget
 
     return AceGUI:RegisterAsContainer(widget)
 end

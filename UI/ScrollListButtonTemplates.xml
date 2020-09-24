@@ -5,7 +5,7 @@
             <AbsDimension x="299" y="20"/>
         </Size>
         <Layers>
-            <Layer level="BACKGROUND">
+            <Layer>
                 <FontString name="$parentString1" inherits="GameFontHighlightSmall" wordwrap="false" hidden="true" parentKey="string1">
                     <Size>
                         <AbsDimension x="10" y="16"/>
@@ -53,7 +53,7 @@
     <Button name="EPGPRScrollListColumnButtonTemplate" virtual="true">
         <Size x="10" y="24"/>
         <Layers>
-            <Layer level="BACKGROUND">
+            <Layer>
                 <Texture parentKey="Left" name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
                     <Size x="5" y="24"/>
                     <Anchors>
