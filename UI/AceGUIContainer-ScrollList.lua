@@ -112,7 +112,7 @@ local function createRows(self)
 end
 
 local function scrollTo(self, offset)
-    local newOffset = math.max(0, math.min(#self.items - #(self.children or {}), offset))
+    local newOffset = math.max(0, math.min(#self.items - #self.rows, offset))
     if newOffset == self.offset then return end
     self.offset = newOffset
     self.scrollbar:SetValue(newOffset)
