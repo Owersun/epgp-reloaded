@@ -28,7 +28,7 @@ end
 
 -- callback when header button is clicked
 local function headerClick(self, i)
-
+    self:Fire("OnColumnClick", i)
 end
 
 -- put buttons on the header
@@ -65,7 +65,7 @@ end
 
 -- Called when row that is a button is clicked
 local function rowClick(self, i)
-    self:Fire("OnRowClick", i + self.offset)
+    self:Fire("OnRowClick", self.items[i + self.offset])
 end
 
 -- Manage rows in the content frame, create missing amount, or remove excessive amount
@@ -145,12 +145,6 @@ local methods = {
     ["OnAcquire"] = function(self)
 
     end,
-
-    --[[
-    ["OnHeightSet"] = function(self, height)
-        createRows(self, height)
-    end,
-    --]]
 
     ["OnRelease"] = function(self)
         self.offset = 0

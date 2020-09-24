@@ -6,7 +6,7 @@ local function guildGetMemeberEPGP(officerNote)
     local noteEP, noteGP = officerNote:match("(%d+),(%d+)")
     local EP = noteEP or 0;
     local GP = noteGP or EPGPR.config.GP.basegp;
-    return EP, GP, floor((EP / GP) * 100) / 100
+    return tonumber(EP), tonumber(GP), floor((EP / GP) * 100) / 100
 end
 
 -- Get guild member data from the guild roster, and return it in format we work with
