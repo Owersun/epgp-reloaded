@@ -49,15 +49,14 @@ end
 
 -- Fill rows with items
 local function drawItems(self)
-    local items, rows = self.items, self.rows
+    local items, rows, columns = self.items, self.rows, #self.columns
     for i, row in ipairs(rows) do
         local itemIndex = i + self.offset
         local item = items[itemIndex]
-        if item then -- show item, if there is one
-            for n, text in ipairs(item) do
-                row["string" .. n]:SetText(text)
-            end
-        else -- hide row if there is no item
+        -- show item, if there is one
+        if item then for n = 1, columns do
+            row["string" .. n]:SetText(item[n])
+        end else -- hide row if there is no item
             row:Hide()
         end
     end

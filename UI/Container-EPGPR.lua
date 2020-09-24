@@ -32,13 +32,14 @@ local function tabStangings(container)
     group:SetHeight(284)
 
     local frame = AceGUI:Create("ScrollList")
-    frame:SetColumns({
-        { width = 140, name = "Name" },
+    local columns = {
+        { width = 140, name = "Name", sortby = 6 },
         { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
-    })
+    }
+    frame:SetColumns(columns)
     group:AddChild(frame)
     container:AddChild(group)
 
@@ -47,13 +48,14 @@ local function tabStangings(container)
         for name, data in pairs(EPGPR.State.guildRoster or {}) do
             local _, playerRank, playerClass, EP, GP, PR = unpack(data)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-            table.insert(items, { " |c" .. classColor .. name .. "|r", playerRank, EP, GP, PR })
+            table.insert(items, { " |c" .. classColor .. name .. "|r", playerRank, EP, GP, PR, name })
         end
         items = sortBy(items, sortByIndex.standings)
         frame:SetItems(items)
     end
     frame:SetCallback("OnColumnClick", function(widget, event, i)
-        sortByIndex.standings = sortByIndex.standings == i and -i or i
+        local sortby = columns[i].sortby or i
+        sortByIndex.standings = sortByIndex.standings == sortby and -1 * sortby or sortby
         refreshScrollList()
     end)
 
@@ -82,13 +84,14 @@ local function tabRaid(container)
     group:AddChild(frame)
     container:AddChild(group)
 
-    frame:SetColumns({
-        { width = 140, name = "Name" },
+    local columns = {
+        { width = 140, name = "Name", sortby = 6 },
         { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
-    })
+    }
+    frame:SetColumns(columns)
 
     local function refreshScrollList()
         local isInRaid = IsInRaid("player")
@@ -100,9 +103,9 @@ local function tabRaid(container)
                 local color = online and classColor or 'bbbbbbbb'
                 local _, i, playerRank, _, EP, GP, PR = EPGPR:GuildGetMemberInfo(name, true)
                 if i ~= nil then
-                    table.insert(items, { " |c" .. color .. name .. "|r", playerRank, EP, GP, PR })
+                    table.insert(items, { " |c" .. color .. name .. "|r", playerRank, EP, GP, PR, name })
                 else
-                    table.insert(items, { " |c" .. color .. name .. "|r", "(non-guild member)", 0, 0, 0 })
+                    table.insert(items, { " |c" .. color .. name .. "|r", "(non-guild member)", 0, 0, 0, name })
                 end
             end
         end end
@@ -110,7 +113,8 @@ local function tabRaid(container)
         frame:SetItems(items)
     end
     frame:SetCallback("OnColumnClick", function(widget, event, i)
-        sortByIndex.raid = sortByIndex.raid == i and -i or i
+        local sortby = columns[i].sortby or i
+        sortByIndex.raid = sortByIndex.raid == sortby and -sortby or sortby
         refreshScrollList()
     end)
 
@@ -140,36 +144,33 @@ local function tabStandby(container)
     standbyGroup:AddChild(frame)
     container:AddChild(standbyGroup)
 
-    frame:SetColumns({
-        { width = 140, name = "Name" },
+    local columns = {
+        { width = 140, name = "Name", sortby = 6 },
         { width = 100, name = "Rank" },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
-    })
-
-    local index
+    }
+    frame:SetColumns(columns)
 
     local function refreshScrollList()
         local items = {}
-        index = {}
         for name, _ in pairs(EPGPR.config.standby.list or {}) do
             local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-            local playerName = " |c" .. classColor .. name .. "|r"
-            table.insert(items, { playerName, playerRank, EP, GP, PR })
-            index[playerName] = name
+            -- there are 5 setup columns and 6 values in the row. 6-th value hold uncolorised player name, which going to be hidden and used in sorting and when row returned in OnClick
+            table.insert(items, { " |c" .. classColor .. name .. "|r", playerRank, EP, GP, PR, name })
         end
         items = sortBy(items, sortByIndex.standby)
         frame:SetItems(items)
     end
     frame:SetCallback("OnRowClick", function(widget, event, row)
-        local name = index[row[1]] -- take colorised player name from the row, and match it to player name saved in index
-        if name then EPGPR.config.standby.list[name] = nil end
+        EPGPR.config.standby.list[row[6]] = nil
         refreshScrollList()
     end)
     frame:SetCallback("OnColumnClick", function(widget, event, i)
-        sortByIndex.standby = sortByIndex.standby and -i or i
+        local sortby = columns[i].sortby or i
+        sortByIndex.standby = sortByIndex.standby == sortby and sortby or sortby
         refreshScrollList()
     end)
 
@@ -191,21 +192,22 @@ local function tabAlts(container)
     altsGroup:AddChild(frame)
     container:AddChild(altsGroup)
 
-    frame:SetColumns({
+    local columns = {
         { width = 100, name = "Alt" },
-        { width = 140, name = "Main" },
+        { width = 140, name = "Main", sortby = 6 },
         { width = 30, name = "EP", justify = "RIGHT" },
         { width = 30, name = "GP", justify = "RIGHT" },
         { width = 30, name = "PR", justify = "RIGHT" },
-    })
+    }
+    frame:SetColumns(columns)
 
     local function refreshScrollList()
         local items = {}
         EPGPR:GuildRefreshRoster()
         for alt, main in pairs(EPGPR.config.alts.list or {}) do
-            local playerName, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
+            local name, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(main)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
-            table.insert(items, { alt, " |c" .. classColor .. playerName .. "|r (" .. playerRank .. ")", EP, GP, PR })
+            table.insert(items, { alt, " |c" .. classColor .. name .. "|r (" .. playerRank .. ")", EP, GP, PR, name })
         end
         items = sortBy(items, sortByIndex.alts)
         frame:SetItems(items)
@@ -216,7 +218,8 @@ local function tabAlts(container)
         refreshScrollList()
     end)
     frame:SetCallback("OnColumnClick", function(widget, event, i)
-        sortByIndex.alts = sortByIndex.alts and -i or i
+        local sortby = columns[i].sortby or i
+        sortByIndex.alts = sortByIndex.alts == sortby and -sortby or sortby
         refreshScrollList()
     end)
 
