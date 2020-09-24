@@ -13,9 +13,11 @@ local sortByIndex = {
 
 local function sortBy(rows, column)
     local i = math.abs(column)
-    table.sort(rows, function(rowA, rowB)
-        return rowA[i] > rowB[i]
-    end)
+    if column < 0 then
+        table.sort(rows, function(rowA, rowB) return rowA[i] < rowB[i] end)
+    else
+        table.sort(rows, function(rowA, rowB) return rowA[i] > rowB[i] end)
+    end
     return rows
 end
 
