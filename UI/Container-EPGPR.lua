@@ -3,24 +3,6 @@ local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack, StaticPopup_Show, GetRaidRosterI
 -- will modify byttons be disabled
 local canModifyEPGP = CanEditOfficerNote()
 
--- sort indexes of tabs. resorting a tab will change the index here
-local sortByIndex = {
-    standings = 5, -- by priority desc
-    raid = 5, -- by priority desc
-    standby = 5, -- by priority desc
-    alts = 5, -- by priority desc
-}
-
-local function sortBy(rows, column)
-    local i = math.abs(column)
-    if column < 0 then
-        table.sort(rows, function(rowA, rowB) return rowA[i] < rowB[i] end)
-    else
-        table.sort(rows, function(rowA, rowB) return rowA[i] > rowB[i] end)
-    end
-    return rows
-end
-
 local function tabStangings(container)
     container:SetLayout("List")
 
@@ -43,21 +25,15 @@ local function tabStangings(container)
     group:AddChild(frame)
     container:AddChild(group)
 
-    local function refreshScrollList()
+    local function getItems()
         local items = {}
         for name, data in pairs(EPGPR.State.guildRoster or {}) do
             local _, playerRank, playerClass, EP, GP, PR = unpack(data)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
             table.insert(items, { " |c" .. classColor .. name .. "|r", playerRank, EP, GP, PR, name })
         end
-        items = sortBy(items, sortByIndex.standings)
-        frame:SetItems(items)
+        return items
     end
-    frame:SetCallback("OnColumnClick", function(widget, event, i)
-        local sortby = columns[i].sortby or i
-        sortByIndex.standings = sortByIndex.standings == sortby and -1 * sortby or sortby
-        refreshScrollList()
-    end)
 
     local changeGuildEPGP = AceGUI:Create("Button")
     changeGuildEPGP:SetDisabled(not changeGuildEPGP)
@@ -67,7 +43,9 @@ local function tabStangings(container)
         StaticPopup_Show("EPGPR_CHANGE_GUILD_EPGP_POPUP")
     end)
 
-    refreshScrollList()
+    local items = getItems()
+    table.sort(items, function(rowA, rowB) return rowA[5] > rowB[5] end) -- sort by PR
+    frame:SetItems(items)
 end
 
 local function tabRaid(container)
@@ -93,7 +71,7 @@ local function tabRaid(container)
     }
     frame:SetColumns(columns)
 
-    local function refreshScrollList()
+    local function getItems()
         local isInRaid = IsInRaid("player")
         local items = {}
         if isInRaid then for n = 1, MAX_RAID_MEMBERS do
@@ -109,14 +87,8 @@ local function tabRaid(container)
                 end
             end
         end end
-        items = sortBy(items, sortByIndex.raid)
-        frame:SetItems(items)
+        return items
     end
-    frame:SetCallback("OnColumnClick", function(widget, event, i)
-        local sortby = columns[i].sortby or i
-        sortByIndex.raid = sortByIndex.raid == sortby and -sortby or sortby
-        refreshScrollList()
-    end)
 
     local changeRaidEP = AceGUI:Create("Button")
     changeRaidEP:SetDisabled(not isInRaid or not canModifyEPGP)
@@ -126,7 +98,9 @@ local function tabRaid(container)
         StaticPopup_Show("EPGPR_CHANGE_RAID_EP_POPUP")
     end)
 
-    refreshScrollList()
+    local items = getItems()
+    table.sort(items, function(rowA, rowB) return rowA[5] > rowB[5] end) -- sort by PR
+    frame:SetItems(items)
 end
 
 local function tabStandby(container)
@@ -153,7 +127,7 @@ local function tabStandby(container)
     }
     frame:SetColumns(columns)
 
-    local function refreshScrollList()
+    local function getItems()
         local items = {}
         for name, _ in pairs(EPGPR.config.standby.list or {}) do
             local _, _, playerRank, playerClass, EP, GP, PR = EPGPR:GuildGetMemberInfo(name)
@@ -161,20 +135,18 @@ local function tabStandby(container)
             -- there are 5 setup columns and 6 values in the row. 6-th value hold uncolorised player name, which going to be hidden and used in sorting and when row returned in OnClick
             table.insert(items, { " |c" .. classColor .. name .. "|r", playerRank, EP, GP, PR, name })
         end
-        items = sortBy(items, sortByIndex.standby)
-        frame:SetItems(items)
+        return items
     end
+
     frame:SetCallback("OnRowClick", function(widget, event, row)
         EPGPR.config.standby.list[row[6]] = nil
-        refreshScrollList()
-    end)
-    frame:SetCallback("OnColumnClick", function(widget, event, i)
-        local sortby = columns[i].sortby or i
-        sortByIndex.standby = sortByIndex.standby == sortby and sortby or sortby
-        refreshScrollList()
+        local items = getItems()
+        frame:SetItems(items)
     end)
 
-    refreshScrollList()
+    local items = getItems()
+    table.sort(items, function(rowA, rowB) return rowA[5] > rowB[5] end) -- sort by PR
+    frame:SetItems(items)
 end
 
 local function tabAlts(container)
@@ -201,7 +173,7 @@ local function tabAlts(container)
     }
     frame:SetColumns(columns)
 
-    local function refreshScrollList()
+    local function getItems()
         local items = {}
         EPGPR:GuildRefreshRoster()
         for alt, main in pairs(EPGPR.config.alts.list or {}) do
@@ -209,18 +181,13 @@ local function tabAlts(container)
             local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
             table.insert(items, { alt, " |c" .. classColor .. name .. "|r (" .. playerRank .. ")", EP, GP, PR, name })
         end
-        items = sortBy(items, sortByIndex.alts)
-        frame:SetItems(items)
+        return items
     end
+
     frame:SetCallback("OnRowClick", function(widget, event, row)
-        -- on index 1 of a row there is alt nickname, by how the row is composed
         EPGPR:SetAlt(row[1], nil)
-        refreshScrollList()
-    end)
-    frame:SetCallback("OnColumnClick", function(widget, event, i)
-        local sortby = columns[i].sortby or i
-        sortByIndex.alts = sortByIndex.alts == sortby and -sortby or sortby
-        refreshScrollList()
+        local items = getItems()
+        frame:SetItems(items)
     end)
 
     -- Alts controls
@@ -245,11 +212,14 @@ local function tabAlts(container)
         if EPGPR:SetAlt(a:GetText(), b:GetText()) then
             a:SetText()
             b:SetText()
-            refreshScrollList()
+            local items = getItems()
+            frame:SetItems(items)
         end
     end)
 
-    refreshScrollList()
+    local items = getItems()
+    table.sort(items, function(rowA, rowB) return rowA[5] > rowB[5] end) -- sort by PR
+    frame:SetItems(items)
 end
 
 local function tabExport(container)

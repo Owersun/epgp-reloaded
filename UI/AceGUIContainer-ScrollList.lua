@@ -26,25 +26,21 @@ local function configureScrollbar(self)
     scrollbar:Show()
 end
 
--- callback when header button is clicked
-local function headerClick(self, i)
-    self:Fire("OnColumnClick", i)
+-- sort items by column
+local function sort(self, by)
+    local sortby = self.columns[by].sortby or by
+    self.sortedBy = self.sortedBy == sortby and -1 * sortby or sortby
+    local i = math.abs(self.sortedBy)
+    if self.sortedBy > 0 then
+        table.sort(self.items, function(rowA, rowB) return rowA[i] < rowB[i] end)
+    else
+        table.sort(self.items, function(rowA, rowB) return rowA[i] > rowB[i] end)
+    end
 end
 
--- put buttons on the header
-local function drawHeader(self)
-    local offset = 0
-    for i, config in ipairs(self.columns) do
-        local button = self.headerfactory:Acquire()
-        button:SetWidth(config.width)
-        button.Middle:SetWidth(config.width - 9)
-        button:SetPoint("TOPLEFT", offset, 0)
-        button:SetText(config.name)
-        button:SetScript("OnClick", function() headerClick(self, i) end)
-        button:Show()
-        -- button:SetJustifyH(config.justify or "LEFT")
-        offset = offset + config.width
-    end
+-- Called when row that is a button is clicked
+local function rowClick(self, i)
+    self:Fire("OnRowClick", self.items[i + self.offset])
 end
 
 -- Fill rows with items
@@ -62,9 +58,25 @@ local function drawItems(self)
     end
 end
 
--- Called when row that is a button is clicked
-local function rowClick(self, i)
-    self:Fire("OnRowClick", self.items[i + self.offset])
+-- callback when header button is clicked
+local function headerClick(self, i)
+    sort(self, i)
+    drawItems(self)
+end
+
+-- put buttons on the header
+local function drawHeader(self)
+    local offset = 0
+    for i, config in ipairs(self.columns) do
+        local button = self.headerfactory:Acquire()
+        button:SetWidth(config.width)
+        button.Middle:SetWidth(config.width - 9)
+        button:SetPoint("TOPLEFT", offset, 0)
+        button:SetText(config.name)
+        button:SetScript("OnClick", function() headerClick(self, i) end)
+        button:Show()
+        offset = offset + config.width
+    end
 end
 
 -- Manage rows in the content frame, create missing amount, or remove excessive amount
@@ -147,11 +159,12 @@ local methods = {
 
     ["OnRelease"] = function(self)
         self.offset = 0
+        self.sortedBy = 0
         self.items = {}
         self.columns = {}
-        self.rows = {}
         self.rowsfactory:ReleaseAll()
         self.headerfactory:ReleaseAll()
+        self.rows = {}
     end,
 
     ["SetItems"] = function(self, items)
@@ -213,6 +226,7 @@ local function Constructor()
         content     = content,
         columns     = {},
         headerfactory = headerfactory,
+        sortedBy    = 0,
         items       = {},
         rows        = {},
         rowsfactory = rowsfactory,
