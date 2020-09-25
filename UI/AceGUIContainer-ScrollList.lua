@@ -15,14 +15,15 @@ Support functions
 
 local function configureScrollbar(self)
     local scrollbar, items, rows = self.scrollbar, #self.items, #self.rows;
-    if items < self.content:GetHeight() / self.rowHeight then
+    if items < rows then
+        scrollbar:Disable()
         scrollbar:Hide()
         return
     end
-    scrollbar:SetMinMaxValues(0, math.max(0, items - rows))
-    scrollbar:SetValueStep(1);
+    scrollbar:SetMinMaxValues(0, math.max(0, items - rows + 1))
     scrollbar:SetStepsPerPage(rows);
     scrollbar:SetValue(self.offset);
+    scrollbar:Enable()
     scrollbar:Show()
 end
 
@@ -186,6 +187,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
     local frame = CreateFrame("Frame", nil, UIParent)
+    local num = AceGUI:GetNextWidgetNum(Type)
 
     local header = CreateFrame("Frame", nil, frame)
     header:SetPoint("TOPLEFT")
@@ -204,15 +206,20 @@ local function Constructor()
     content:SetPoint("TOPLEFT")
     content:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", -16, 0)
 
-    local scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate")
-    scrollbar:Hide()
+    local scrollbar = CreateFrame("Slider", ("AceConfigDialogScrollFrame%dScrollBar"):format(num), scrollframe, "UIPanelScrollBarTemplate")
     scrollbar:SetValue(0)
+    scrollbar:SetValueStep(1)
     scrollbar:SetPoint("TOPRIGHT", scrollframe, "TOPRIGHT", 0, -16)
     scrollbar:SetPoint("BOTTOMRIGHT", scrollframe, "BOTTOMRIGHT", 0, 16)
     scrollbar:SetWidth(16)
     scrollbar:SetObeyStepOnDrag(true)
+    scrollbar:Hide()
     -- set the script as the last step, so it doesn't fire yet
     scrollbar:SetScript("OnValueChanged", ScrollBar_OnScrollValueChanged)
+
+    local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
+    scrollbg:SetAllPoints(scrollbar)
+    scrollbg:SetTexture(0, 0, 0, 0.4)
 
     -- Pool of rows that scroll container can consume
     local rowsfactory = CreateFramePool("Button", content, "EPGPRScrollListButtonTemplate")
