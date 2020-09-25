@@ -29,6 +29,7 @@ Chat.lua
 Communication.lua
 UI.lua
 UI\Container-EPGPR.lua
+UI\Container-EPGPRGW.lua
 UI\Widget-LootOverviewItemAnnounce.lua
 UI\Widget-LootOverviewItem.lua
 UI\Container-LootOverview.lua

@@ -8,11 +8,16 @@ EPGPR.UI = {
     LootOverviewItemAnnounce = nil,
 }
 
+-- Get interface theme
+-- local UITheme
+-- if EPGPR.config.general.ui == "default" then UITheme = EPGPR.UI.EPGPR() else UITheme = EPGPR.UI.EPGPRGW() end
+
 -- Console command /epgp
 local _UIEPGPFrame
 function EPGPR:UIEPGPFrame()
     -- Don't duplicate if we're already shown
-    if not _UIEPGPFrame then _UIEPGPFrame = EPGPR.UI.EPGPR() end
+    -- if not _UIEPGPFrame then _UIEPGPFrame = UITheme end
+	if not _UIEPGPFrame then _UIEPGPFrame = EPGPR.UI.EPGPR() end -- UITheme
     _UIEPGPFrame:Show()
 end
 

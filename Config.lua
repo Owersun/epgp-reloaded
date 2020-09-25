@@ -12,6 +12,7 @@ local defaultConfig = {
     general = {
         debug = false,
         missingManBonus = false,
+        -- ui = "default", -- gw or default
     },
     instance = {
         [249] = { name = "Onyxia Lair", missingManBonus = false, EP = 1 },
