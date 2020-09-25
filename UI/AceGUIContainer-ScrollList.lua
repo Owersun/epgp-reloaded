@@ -71,6 +71,7 @@ local function drawHeader(self)
         local button = self.headerfactory:Acquire()
         button:SetWidth(config.width)
         button.Middle:SetWidth(config.width - 9)
+        button:GetFontString():SetJustifyH(config.justify or "LEFT")
         button:SetPoint("TOPLEFT", offset, 0)
         button:SetText(config.name)
         button:SetScript("OnClick", function() headerClick(self, i) end)
@@ -82,8 +83,7 @@ end
 -- Manage rows in the content frame, create missing amount, or remove excessive amount
 local function createRows(self)
     local rowHeight, hasRows = self.rowHeight, #self.rows
-    local totalRows = math.ceil(self.content:GetHeight() / rowHeight)
-    local needRows = math.min(#self.items, totalRows)
+    local needRows = math.floor(self.content:GetHeight() / rowHeight) + 1 -- there always must be 1 line more than the form height
 
     -- We already have exactly as much rows as we need
     if hasRows == needRows then return end
@@ -104,7 +104,7 @@ local function createRows(self)
                 string:Show()
                 offset = offset + column.width
             end
-            row:SetScript("OnClick", function() rowClick(self, i) end)
+            row:SetScript("OnClick", function(_) rowClick(self, i) end)
             row:Show()
             table.insert(self.rows, row)
         end
@@ -123,7 +123,7 @@ local function createRows(self)
 end
 
 local function scrollTo(self, offset)
-    local newOffset = math.max(0, math.min(#self.items - #self.rows, offset))
+    local newOffset = math.max(0, math.min(#self.items - #self.rows + 1, offset))
     if newOffset == self.offset then return end
     self.offset = newOffset
     self.scrollbar:SetValue(newOffset)
@@ -170,6 +170,7 @@ local methods = {
     ["SetItems"] = function(self, items)
         self.items = items
         createRows(self)
+        if (self.sortedBy ~= 0) then sort(self, self.sortedBy) end
         drawItems(self)
     end,
 
