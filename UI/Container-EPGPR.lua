@@ -11,15 +11,15 @@ local function tabStangings(container)
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
-    group:SetHeight(284)
+    group:SetHeight(384)
 
     local frame = AceGUI:Create("ScrollList")
     local columns = {
-        { width = 140, name = "Name", sortby = 6 },
-        { width = 100, name = "Rank" },
-        { width = 30, name = "EP", justify = "RIGHT" },
-        { width = 30, name = "GP", justify = "RIGHT" },
-        { width = 30, name = "PR", justify = "RIGHT" },
+        { width = 150, name = "Name", sortby = 6 },
+        { width = 110, name = "Rank" },
+        { width = 40, name = "EP", justify = "RIGHT" },
+        { width = 40, name = "GP", justify = "RIGHT" },
+        { width = 40, name = "PR", justify = "RIGHT" },
     }
     frame:SetColumns(columns)
     group:AddChild(frame)
@@ -56,18 +56,18 @@ local function tabRaid(container)
     local group = AceGUI:Create("SimpleGroup")
     group:SetLayout("Fill")
     group:SetFullWidth(true)
-    group:SetHeight(284)
+    group:SetHeight(384)
 
     local frame = AceGUI:Create("ScrollList")
     group:AddChild(frame)
     container:AddChild(group)
 
     local columns = {
-        { width = 140, name = "Name", sortby = 6 },
-        { width = 100, name = "Rank" },
-        { width = 30, name = "EP", justify = "RIGHT" },
-        { width = 30, name = "GP", justify = "RIGHT" },
-        { width = 30, name = "PR", justify = "RIGHT" },
+        { width = 150, name = "Name", sortby = 6 },
+        { width = 110, name = "Rank" },
+        { width = 40, name = "EP", justify = "RIGHT" },
+        { width = 40, name = "GP", justify = "RIGHT" },
+        { width = 40, name = "PR", justify = "RIGHT" },
     }
     frame:SetColumns(columns)
 
@@ -112,18 +112,18 @@ local function tabStandby(container)
     local standbyGroup = AceGUI:Create("SimpleGroup")
     standbyGroup:SetLayout("Fill")
     standbyGroup:SetFullWidth(true)
-    standbyGroup:SetHeight(304)
+    standbyGroup:SetHeight(404)
 
     local frame = AceGUI:Create("ScrollList")
     standbyGroup:AddChild(frame)
     container:AddChild(standbyGroup)
 
     local columns = {
-        { width = 140, name = "Name", sortby = 6 },
-        { width = 100, name = "Rank" },
-        { width = 30, name = "EP", justify = "RIGHT" },
-        { width = 30, name = "GP", justify = "RIGHT" },
-        { width = 30, name = "PR", justify = "RIGHT" },
+        { width = 150, name = "Name", sortby = 6 },
+        { width = 110, name = "Rank" },
+        { width = 40, name = "EP", justify = "RIGHT" },
+        { width = 40, name = "GP", justify = "RIGHT" },
+        { width = 40, name = "PR", justify = "RIGHT" },
     }
     frame:SetColumns(columns)
 
@@ -158,18 +158,18 @@ local function tabAlts(container)
     local altsGroup = AceGUI:Create("SimpleGroup")
     altsGroup:SetLayout("Fill")
     altsGroup:SetFullWidth(true)
-    altsGroup:SetHeight(284)
+    altsGroup:SetHeight(384)
 
     local frame = AceGUI:Create("ScrollList")
     altsGroup:AddChild(frame)
     container:AddChild(altsGroup)
 
     local columns = {
-        { width = 100, name = "Alt" },
-        { width = 140, name = "Main", sortby = 6 },
-        { width = 30, name = "EP", justify = "RIGHT" },
-        { width = 30, name = "GP", justify = "RIGHT" },
-        { width = 30, name = "PR", justify = "RIGHT" },
+        { width = 110, name = "Alt" },
+        { width = 150, name = "Main", sortby = 6 },
+        { width = 40, name = "EP", justify = "RIGHT" },
+        { width = 40, name = "GP", justify = "RIGHT" },
+        { width = 40, name = "PR", justify = "RIGHT" },
     }
     frame:SetColumns(columns)
 
@@ -197,16 +197,16 @@ local function tabAlts(container)
     container:AddChild(addAlt)
     local a = AceGUI:Create("EditBox")
     addAlt:AddChild(a)
-    a:SetWidth(120)
+    a:SetWidth(140)
     a:DisableButton(true)
     local b = AceGUI:Create("EditBox")
     addAlt:AddChild(b)
-    b:SetWidth(120)
+    b:SetWidth(140)
     b:DisableButton(true)
     local ok = AceGUI:Create("Button")
     addAlt:AddChild(ok)
     ok:SetText("add alt")
-    ok:SetWidth(100)
+    ok:SetWidth(110)
     ok:SetCallback("OnClick", function()
         -- on success clear the fields and refresh the form
         if EPGPR:SetAlt(a:GetText(), b:GetText()) then
@@ -263,7 +263,7 @@ local function tabAbout(container)
     local label = AceGUI:Create("Label")
     label:SetFont(label.label:GetFont(), 24)
     label:SetColor(1, 1, 0)
-    label:SetText("\n\n\n\n\nОверсан / Оверскай\nПламегор - Firemaw")
+    label:SetText("\n\n\n\n\n\nОверсан / Оверскай\nПламегор - Firemaw")
     label:SetJustifyH("CENTER")
     aboutGroup:AddChild(label)
 end
@@ -292,8 +292,8 @@ EPGPR.UI.EPGPR = function()
     window:SetTitle("EPGP Reloaded")
     window:EnableResize(false)
     window:SetLayout("Fill")
-    window:SetWidth(400)
-    window:SetHeight(400)
+    window:SetWidth(450)
+    window:SetHeight(500)
 
     -- Add tabs to the container
     local tabGroup = AceGUI:Create("TabGroup");
