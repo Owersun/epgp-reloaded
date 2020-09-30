@@ -94,6 +94,7 @@ local function createRows(self)
     if needRows > hasRows then
         for i = hasRows + 1, needRows do
             local row = self.rowsfactory:Acquire()
+            table.insert(self.rows, i, row)
             row:SetPoint("TOPLEFT", self.content, "TOPLEFT", 0, -1 * i * rowHeight + rowHeight)
             row:SetWidth(width)
             local offset = 0
@@ -107,7 +108,6 @@ local function createRows(self)
             end
             row:SetScript("OnClick", function(_) rowClick(self, i) end)
             row:Show()
-            table.insert(self.rows, row)
         end
         -- redraw rows content as we added few
         drawItems(self)
