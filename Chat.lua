@@ -3,15 +3,17 @@ local L = EPGPR.Libs.Locale
 
 -- When loot is being announced
 function EPGPR:ChatAnnounceLoot(itemLink, GP)
+    local myself = UnitName("player")
     SendChatMessage(("%s %d GP"):format(itemLink, GP), "RAID_WARNING");
-    SendChatMessage("whisper '!need' for main spec / full price", "RAID")
-    SendChatMessage("whisper '!off' for off spec / half price", "RAID")
-    SendChatMessage("/roll for Bank spec / free", "RAID")
+    SendChatMessage(L["'/w %s !need' for main spec / %d GP"]:format(myself, GP), "RAID")
+    SendChatMessage(L["'/w %s !off' for off spec / %d GP"]:format(myself, GP), "RAID")
+    SendChatMessage(L["'/roll' as greed / %d GP"]:format(GP), "RAID")
 end
 
 -- When raid EP has been given/taken
 function EPGPR:ChatRaidEPGiven(EP)
-    SendChatMessage(("%d EP %s the raid"):format(math.abs(EP), EP > 0 and "added to" or "removed from"), "RAID")
+    local message = EP > 0 and "%d EP added to the Raid" or "%d EP substracted from the Raid"
+    SendChatMessage((L[message]):format(math.abs(EP)), "RAID")
 end
 
 -- When encounter has been won and EP was awarded
@@ -37,7 +39,7 @@ end
 
 -- When Guild EPGP is changed by the percent
 function EPGPR:ChatGuildEPGPChanged(percent)
-    SendChatMessage(("Guild EPGP changed by %d percent"):format(percent), "GUILD")
+    SendChatMessage((L["Guild EPGP changed by %d percent"]):format(percent), "GUILD")
 end
 
 -- List items in the given list to raid chat
