@@ -1,4 +1,5 @@
 local EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem, UnitName = EPGPR, GetLootSlotLink, GetLootSlotInfo, GetNumLootItems, GetMasterLootCandidate, LootSlotHasItem, UnitName
+local L = EPGPR.Libs.Locale
 
 -- WoW events we hook to, when activated
 local events = { "LOOT_OPENED", "LOOT_CLOSED", "LOOT_SLOT_CLEARED", "ENCOUNTER_END", "GROUP_ROSTER_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_WHISPER", "CHAT_MSG_LOOT" }
@@ -73,7 +74,7 @@ end
 
 -- Pick up messages we are interested in from system messages (in yellow)
 function EPGPR:CHAT_MSG_SYSTEM(_, message)
-    local name, roll = message:match("(%S+) выбрасывает (%d+) %(1%-100%)") -- watch for rolls
+    local name, roll = message:match(L["rollPattern"]) -- watch for rolls
     if name and self.config.bidding.considerRoll then self:UILootOverview():Fire("Bid", name, nil, tonumber(roll)) end
 end
 

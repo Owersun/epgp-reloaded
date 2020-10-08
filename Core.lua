@@ -4,6 +4,7 @@ EPGPR = LibStub("AceAddon-3.0"):NewAddon("EPGPR", "AceEvent-3.0", "AceConsole-3.
 -- Local instances of ACE Libraries
 EPGPR.Libs = {
     AceGUI = LibStub("AceGUI-3.0"),
+    Locale = LibStub("AceLocale-3.0"):GetLocale("EPGPR"),
 }
 -- Constants that are used here and there, like message names, channel names to send/receive message and so on
 EPGPR.Const = {

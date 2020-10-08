@@ -1,4 +1,5 @@
 local EPGPR, SendChatMessage = EPGPR, SendChatMessage
+local L = EPGPR.Libs.Locale
 
 -- When loot is being announced
 function EPGPR:ChatAnnounceLoot(itemLink, GP)
@@ -15,12 +16,13 @@ end
 
 -- When encounter has been won and EP was awarded
 function EPGPR:ChatEncounterEPAwarded(name, EP, bonusEP)
-    SendChatMessage(("%s has been defeated, %s EP awarded to the raid"):format(name, bonusEP > 0 and (EP .. " + " .. bonusEP) or tostring(EP)), "GUILD")
+    SendChatMessage((L["%s has been defeated, %s EP awarded to the raid"]):format(name, bonusEP > 0 and (EP .. " + " .. bonusEP) or tostring(EP)), "GUILD")
 end
 
 -- When item has been given using the app
 function EPGPR:ChatItemDistributed(name, itemLink, GP)
-    SendChatMessage(itemLink .. " has been given to " .. name .. (GP and (" for " .. GP .. " GP") or " without EPGP"), "GUILD")
+    local message = GP and "%s has been given to %s for %d GP" or "%s has been given to %s without EPGP"
+    SendChatMessage(L[message]:format(itemLink, name, GP), "GUILD")
 end
 
 -- When a bid has been placed on an item
@@ -30,7 +32,7 @@ end
 
 -- When someone rolled for an item
 function EPGPR:ChatRollPlaced(name, roll)
-    SendChatMessage(("%s rolled %d"):format(name, roll), "RAID")
+    SendChatMessage((L["%s rolled %d"]):format(name, roll), "RAID")
 end
 
 -- When Guild EPGP is changed by the percent

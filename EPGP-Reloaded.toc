@@ -4,6 +4,7 @@
 ## Notes: EPGP Reloaded is EPGP management and distribution addon. Type /epgp for options
 ## SavedVariables: EPGPRCONFIG, EPGPRHISTORY
 
+# Libraries
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\AceAddon-3.0\AceAddon-3.0.xml
@@ -16,10 +17,15 @@ libs\AceSerializer-3.0\AceSerializer-3.0.xml
 libs\AceGUI-3.0\AceGUI-3.0.xml
 libs\AceBucket-3.0\AceBucket-3.0.xml
 
+# Additional ACE UI Forms
 UI\AceGUIWidget-StatusBar.lua
 UI\ScrollListButtonTemplates.xml
 UI\AceGUIContainer-ScrollList.lua
 
+# Locale strings
+Locale\Locale.xml
+
+# Application
 Core.lua
 Utils.lua
 Config.lua
