@@ -15,8 +15,8 @@ local function tabStangings(container)
 
     local frame = AceGUI:Create("ScrollList")
     local columns = {
-        { width = 150, name = "Name", sortby = 6 },
-        { width = 110, name = "Rank" },
+        { width = 200, name = "Name", sortby = 6 },
+        { width = 160, name = "Rank" },
         { width = 40, name = "EP", justify = "RIGHT" },
         { width = 40, name = "GP", justify = "RIGHT" },
         { width = 40, name = "PR", justify = "RIGHT" },
@@ -63,8 +63,8 @@ local function tabRaid(container)
     container:AddChild(group)
 
     local columns = {
-        { width = 150, name = "Name", sortby = 6 },
-        { width = 110, name = "Rank" },
+        { width = 200, name = "Name", sortby = 6 },
+        { width = 160, name = "Rank" },
         { width = 40, name = "EP", justify = "RIGHT" },
         { width = 40, name = "GP", justify = "RIGHT" },
         { width = 40, name = "PR", justify = "RIGHT" },
@@ -119,8 +119,8 @@ local function tabStandby(container)
     container:AddChild(standbyGroup)
 
     local columns = {
-        { width = 150, name = "Name", sortby = 6 },
-        { width = 110, name = "Rank" },
+        { width = 200, name = "Name", sortby = 6 },
+        { width = 160, name = "Rank" },
         { width = 40, name = "EP", justify = "RIGHT" },
         { width = 40, name = "GP", justify = "RIGHT" },
         { width = 40, name = "PR", justify = "RIGHT" },
@@ -165,8 +165,8 @@ local function tabAlts(container)
     container:AddChild(altsGroup)
 
     local columns = {
-        { width = 110, name = "Alt" },
-        { width = 150, name = "Main", sortby = 6 },
+        { width = 160, name = "Alt" },
+        { width = 200, name = "Main", sortby = 6 },
         { width = 40, name = "EP", justify = "RIGHT" },
         { width = 40, name = "GP", justify = "RIGHT" },
         { width = 40, name = "PR", justify = "RIGHT" },
@@ -197,16 +197,16 @@ local function tabAlts(container)
     container:AddChild(addAlt)
     local a = AceGUI:Create("EditBox")
     addAlt:AddChild(a)
-    a:SetWidth(140)
+    a:SetWidth(190)
     a:DisableButton(true)
     local b = AceGUI:Create("EditBox")
     addAlt:AddChild(b)
-    b:SetWidth(140)
+    b:SetWidth(190)
     b:DisableButton(true)
     local ok = AceGUI:Create("Button")
     addAlt:AddChild(ok)
     ok:SetText("add alt")
-    ok:SetWidth(110)
+    ok:SetWidth(100)
     ok:SetCallback("OnClick", function()
         -- on success clear the fields and refresh the form
         if EPGPR:SetAlt(a:GetText(), b:GetText()) then
@@ -219,6 +219,46 @@ local function tabAlts(container)
 
     local items = getItems()
     table.sort(items, function(rowA, rowB) return rowA[5] > rowB[5] end) -- sort by PR
+    frame:SetItems(items)
+end
+
+local function tabHistory(container)
+    container:SetLayout("List")
+
+    EPGPR:GuildRefreshRoster()
+
+    local group = AceGUI:Create("SimpleGroup")
+    group:SetLayout("Fill")
+    group:SetFullWidth(true)
+    group:SetHeight(384)
+
+    local frame = AceGUI:Create("ScrollList")
+    local columns = {
+        { width = 110, name = "Name", sortable = false },
+        { width = 40, name = "EP", sortable = false  },
+        { width = 40, name = "GP", sortable = false  },
+        { width = 210, name = "Note", sortable = false },
+        { width = 80, name = "Time", justify = "RIGHT", sortable = false },
+    }
+    frame:SetColumns(columns)
+    group:AddChild(frame)
+    container:AddChild(group)
+
+    local function getItems()
+        local items = {}
+        for n = #EPGPRHISTORY,1,-1 do
+            local _, name, comment, EP, GP, timestamp = unpack(EPGPRHISTORY[n])
+            if name and EPGPR.State.guildRoster[name] then
+                local playerClass = EPGPR.State.guildRoster[name][3]
+                local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
+                name = " |c" .. classColor .. name .. "|r"
+            end
+            table.insert(items, { name, EP, GP, comment, date('%H:%M:%S %d/%m', timestamp) })
+        end
+        return items
+    end
+
+    local items = getItems()
     frame:SetItems(items)
 end
 
@@ -276,6 +316,8 @@ local function selectTab(container, event, tab)
         tabRaid(container)
     elseif tab == "Standby" then
         tabStandby(container)
+    elseif tab == "History" then
+        tabHistory(container)
     elseif tab == "Alts" then
         tabAlts(container)
     elseif tab == "Export" then
@@ -292,7 +334,7 @@ EPGPR.UI.EPGPR = function()
     window:SetTitle("EPGP Reloaded")
     window:EnableResize(false)
     window:SetLayout("Fill")
-    window:SetWidth(450)
+    window:SetWidth(550)
     window:SetHeight(500)
 
     -- Add tabs to the container
@@ -303,10 +345,11 @@ EPGPR.UI.EPGPR = function()
     local tab1 = { text = "Standings", value = "Standings" }
     local tab2 = { text = "Raid", value = "Raid" }
     local tab3 = { text = "Standby", value = "Standby" }
-    local tab4 = { text = "Alts", value = "Alts" }
-    local tab5 = { text = "Export", value = "Export" }
-    local tab6 = { text = "About", value = "About" }
-    tabGroup:SetTabs({ tab1, tab2, tab3, tab4, tab5, tab6 })
+    local tab4 = { text = "History", value = "History" }
+    local tab5 = { text = "Alts", value = "Alts" }
+    local tab6 = { text = "Export", value = "Export" }
+    local tab7 = { text = "About", value = "About" }
+    tabGroup:SetTabs({ tab1, tab2, tab3, tab4, tab5, tab6, tab7 })
     tabGroup:SetCallback("OnGroupSelected", selectTab)
     tabGroup:SelectTab("Standings")
 

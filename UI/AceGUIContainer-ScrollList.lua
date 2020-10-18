@@ -61,6 +61,7 @@ end
 
 -- callback when header button is clicked
 local function headerClick(self, i)
+    if self.columns[i].sortable == false then return end
     sort(self, i)
     drawItems(self)
 end
