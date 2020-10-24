@@ -18,6 +18,7 @@ local defaultConfig = {
         [409] = { name = "Molten Core", missingManBonus = false, EP = 1 },
         [469] = { name = "Black Wing Lair", missingManBonus = false, EP = 1 },
         [531] = { name = "Ahn'Qiraj", missingManBonus = false, EP = 1 },
+        [533] = { name = "Naxxramas", missingManBonus = false, EP = 1 },
     },
     encounter = {
         -- moltern core
@@ -52,6 +53,22 @@ local defaultConfig = {
         [715] = { name = "Twin Emperors", track = true, EP = 10 },
         [716] = { name = "Ouro", track = true, EP = 10 },
         [717] = { name = "C'thun", track = true, EP = 12 },
+        -- Naxxramas
+        [1107] = { name = "Anub'Rekhan", track = true, EP = 12 },
+        [1108] = { name = "Gluth", track = true, EP = 12 },
+        [1109] = { name = "Gothik the Harvester", track = true, EP = 12 },
+        [1110] = { name = "Grand Widow Faerlina", track = true, EP = 12 },
+        [1111] = { name = "Grobbulus", track = true, EP = 12 },
+        [1112] = { name = "Heigan the Unclean", track = true, EP = 12 },
+        [1113] = { name = "Instructor Razuvious", track = true, EP = 12 },
+        [1114] = { name = "Kel'Thuzad", track = true, EP = 15 },
+        [1115] = { name = "Loatheb", track = true, EP = 15 },
+        [1116] = { name = "Maexxna", track = true, EP = 15 },
+        [1117] = { name = "Noth the Plaguebringer", track = true, EP = 12 },
+        [1118] = { name = "Patchwerk", track = true, EP = 12 },
+        [1119] = { name = "Sapphiron", track = true, EP = 15 },
+        [1120] = { name = "Thaddius", track = true, EP = 15 },
+        [1121] = { name = "The Four Horsemen", track = true, EP = 15 },
     },
     item = {
         -- Imperial Qiraji Armaments
@@ -88,6 +105,50 @@ local defaultConfig = {
         [19002] = { 4, 83, 'INVTYPE_TRINKET' },
         -- Head of Nefarian Alliance
         [19003] = { 4, 83, 'INVTYPE_TRINKET' },
+        -- Desecrated Legplates
+        [22352] = { 4, 88, 'INVTYPE_LEGS' },
+        -- Desecrated Helmet
+        [22353] = { 4, 88, 'INVTYPE_HEAD' },
+        -- Desecrated Pauldrons
+        [22354] = { 4, 88, 'INVTYPE_SHOULDER' },
+        -- Desecrated Bracers
+        [22355] = { 4, 88, 'INVTYPE_WRIST' },
+        -- Desecrated Waistguard
+        [22356] = { 4, 88, 'INVTYPE_WAIST' },
+        -- Desecrated Gauntlets
+        [22357] = { 4, 88, 'INVTYPE_HAND' },
+        -- Desecrated Sabatons
+        [22358] = { 4, 88, 'INVTYPE_FEET' },
+        -- Desecrated Legguards
+        [22359] = { 4, 88, 'INVTYPE_LEGS' },
+        -- Desecrated Headpiece
+        [22360] = { 4, 88, 'INVTYPE_HEAD' },
+        -- Desecrated Spaulders
+        [22361] = { 4, 88, 'INVTYPE_SHOULDER' },
+        -- Desecrated Wristguards
+        [22362] = { 4, 88, 'INVTYPE_WRIST' },
+        -- Desecrated Girdle
+        [22363] = { 4, 88, 'INVTYPE_WAIST' },
+        -- Desecrated Handguards
+        [22364] = { 4, 88, 'INVTYPE_HAND' },
+        -- Desecrated Boots
+        [22365] = { 4, 88, 'INVTYPE_FEET' },
+        -- Desecrated Leggings
+        [22366] = { 4, 88, 'INVTYPE_LEGS' },
+        -- Desecrated Circlet
+        [22367] = { 4, 88, 'INVTYPE_HEAD' },
+        -- Desecrated Shoulderpads
+        [22368] = { 4, 88, 'INVTYPE_SHOULDER' },
+        -- Desecrated Bindings
+        [22369] = { 4, 88, 'INVTYPE_WRIST' },
+        -- Desecrated Belt
+        [22370] = { 4, 88, 'INVTYPE_WAIST' },
+        -- Desecrated Gloves
+        [22371] = { 4, 88, 'INVTYPE_HAND' },
+        -- Desecrated Sandals
+        [22372] = { 4, 88, 'INVTYPE_FEET' },
+        -- The Phylactery of Kel'Thuzad
+        [22520] = { 4, 90, 'INVTYPE_TRINKET' },
     },
     GP = {
         basegp = 1,
@@ -189,6 +250,9 @@ local configOptions = {
                 ["Ahn'Qiraj"] = { name = "Ahn'Qiraj", type = "description", order = 12, width = 2 },
                 ["Ahn'QirajBonus"] = { arg = { 531, "missingManBonus" }, name = "award", type = "toggle", order = 13, width = 0.5 },
                 ["Ahn'QirajBonusEP"] = { arg = { 531, "EP" }, name = "EP", type = "input", order = 14, width = 0.5 },
+                Naxxramas = { name = "Naxxramas", type = "description", order = 15, width = 2 },
+                NaxxramasBonus = { arg = { 533, "missingManBonus" }, name = "award", type = "toggle", order = 16, width = 0.5 },
+                NaxxramasBonusEP = { arg = { 533, "EP" }, name = "EP", type = "input", order = 17, width = 0.5 },
             },
         },
         encounter = {
@@ -288,6 +352,52 @@ local configOptions = {
                 Cthun = { name = "C'thun", type = "description", order = 86, width = 2 },
                 CthunTrack = { arg = { 717, "track" }, name = "track", type = "toggle", order = 87, width = 0.5 },
                 CthunEP = { arg = { 717, "EP" }, name = "EP", type = "input", order = 88, width = 0.5 },
+                Naxxramas = { name = "Naxxramas", type = "header", order = 89, },
+                ["Anub'Rekhan"] = { name = "Anub'Rekhan", type = "description", order = 90, width = 2 },
+                ["Anub'RekhanTrack"] = { arg = { 1107, "track" }, name = "track", type = "toggle", order = 91, width = 0.5 },
+                ["Anub'RekhanEP"] = { arg = { 1107, "EP" }, name = "EP", type = "input", order = 92, width = 0.5 },
+                ["Grand Widow Faerlina"] = { name = "Grand Widow Faerlina", type = "description", order = 93, width = 2 },
+                ["Grand Widow FaerlinaTrack"] = { arg = { 1110, "track" }, name = "track", type = "toggle", order = 94, width = 0.5 },
+                ["Grand Widow FaerlinaEP"] = { arg = { 1110, "EP" }, name = "EP", type = "input", order = 95, width = 0.5 },
+                ["Maexxna"] = { name = "Maexxna", type = "description", order = 96, width = 2 },
+                ["MaexxnaEP"] = { arg = { 1116, "track" }, name = "track", type = "toggle", order = 97, width = 0.5 },
+                ["MaexxnaTrack"] = { arg = { 1116, "EP" }, name = "EP", type = "input", order = 98, width = 0.5 },
+                ["Instructor Razuvious"] = { name = "Instructor Razuvious", type = "description", order = 99, width = 2 },
+                ["Instructor RazuviousEP"] = { arg = { 1113, "track" }, name = "track", type = "toggle", order = 101, width = 0.5 },
+                ["Instructor RazuviousTrack"] = { arg = { 1113, "EP" }, name = "EP", type = "input", order = 102, width = 0.5 },
+                ["Gothik the Harvester"] = { name = "Gothik the Harvester", type = "description", order = 103, width = 2 },
+                ["Gothik the HarvesterEP"] = { arg = { 1109, "track" }, name = "track", type = "toggle", order = 104, width = 0.5 },
+                ["Gothik the HarvesterTrack"] = { arg = { 1109, "EP" }, name = "EP", type = "input", order = 105, width = 0.5 },
+                ["The Four Horsemen"] = { name = "The Four Horsemen", type = "description", order = 106, width = 2 },
+                ["The Four HorsemenEP"] = { arg = { 1121, "track" }, name = "track", type = "toggle", order = 107, width = 0.5 },
+                ["The Four HorsemenTrack"] = { arg = { 1121, "EP" }, name = "EP", type = "input", order = 108, width = 0.5 },
+                ["Noth the Plaguebringer"] = { name = "Noth the Plaguebringer", type = "description", order = 109, width = 2 },
+                ["Noth the PlaguebringerEP"] = { arg = { 1117, "track" }, name = "track", type = "toggle", order = 110, width = 0.5 },
+                ["Noth the PlaguebringerTrack"] = { arg = { 1117, "EP" }, name = "EP", type = "input", order = 111, width = 0.5 },
+                ["Heigan the Unclean"] = { name = "Heigan the Unclean", type = "description", order = 112, width = 2 },
+                ["Heigan the UncleanEP"] = { arg = { 1112, "track" }, name = "track", type = "toggle", order = 113, width = 0.5 },
+                ["Heigan the UncleanTrack"] = { arg = { 1112, "EP" }, name = "EP", type = "input", order = 114, width = 0.5 },
+                ["Loatheb"] = { name = "Loatheb", type = "description", order = 115, width = 2 },
+                ["LoathebEP"] = { arg = { 1115, "track" }, name = "track", type = "toggle", order = 116, width = 0.5 },
+                ["LoathebTrack"] = { arg = { 1115, "EP" }, name = "EP", type = "input", order = 117, width = 0.5 },
+                ["Patchwerk"] = { name = "Patchwerk", type = "description", order = 118, width = 2 },
+                ["PatchwerkEP"] = { arg = { 1118, "track" }, name = "track", type = "toggle", order = 119, width = 0.5 },
+                ["PatchwerkTrack"] = { arg = { 1118, "EP" }, name = "EP", type = "input", order = 120, width = 0.5 },
+                ["Grobbulus"] = { name = "Grobbulus", type = "description", order = 121, width = 2 },
+                ["GrobbulusEP"] = { arg = { 1111, "track" }, name = "track", type = "toggle", order = 122, width = 0.5 },
+                ["GrobbulusTrack"] = { arg = { 1111, "EP" }, name = "EP", type = "input", order = 123, width = 0.5 },
+                ["Gluth"] = { name = "Gluth", type = "description", order = 124, width = 2 },
+                ["GluthEP"] = { arg = { 1108, "track" }, name = "track", type = "toggle", order = 125, width = 0.5 },
+                ["GluthTrack"] = { arg = { 1108, "EP" }, name = "EP", type = "input", order = 126, width = 0.5 },
+                ["Thaddius"] = { name = "Thaddius", type = "description", order = 127, width = 2 },
+                ["ThaddiusEP"] = { arg = { 1120, "track" }, name = "track", type = "toggle", order = 128, width = 0.5 },
+                ["ThaddiusTrack"] = { arg = { 1120, "EP" }, name = "EP", type = "input", order = 129, width = 0.5 },
+                ["Sapphiron"] = { name = "Sapphiron", type = "description", order = 130, width = 2 },
+                ["SapphironEP"] = { arg = { 1119, "track" }, name = "track", type = "toggle", order = 131, width = 0.5 },
+                ["SapphironTrack"] = { arg = { 1119, "EP" }, name = "EP", type = "input", order = 132, width = 0.5 },
+                ["Kel'Thuzad"] = { name = "Kel'Thuzad", type = "description", order = 133, width = 2 },
+                ["Kel'ThuzadEP"] = { arg = { 1114, "track" }, name = "track", type = "toggle", order = 134, width = 0.5 },
+                ["Kel'ThuzadTrack"] = { arg = { 1114, "EP" }, name = "EP", type = "input", order = 135, width = 0.5 },
             }
         },
         GP = {
