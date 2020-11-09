@@ -3,11 +3,13 @@ local L = EPGPR.Libs.Locale
 
 -- When loot is being announced
 function EPGPR:ChatAnnounceLoot(itemLink, GP)
-    local myself = UnitName("player")
+    local myself, config = UnitName("player"), EPGPR.config.bidding
     SendChatMessage(("%s %d GP"):format(itemLink, GP), "RAID_WARNING");
-    SendChatMessage(L["'/w %s !need' for main spec / %d GP"]:format(myself, GP), "RAID")
-    SendChatMessage(L["'/w %s !off' for off spec / %d GP"]:format(myself, GP), "RAID")
-    SendChatMessage(L["'/roll' as greed / %d GP"]:format(GP), "RAID")
+    SendChatMessage(L["'/w %s !need' for main spec / %d GP"]:format(myself, math.floor(config.messages['!need'] * GP)), "RAID")
+    SendChatMessage(L["'/w %s !off' for off spec / %d GP"]:format(myself, math.floor(config.messages['!off'] * GP)), "RAID")
+    if (config.considerRoll) then
+        SendChatMessage(L["'/roll' as greed / %d GP"]:format(math.floor(config.rollRatio * GP)), "RAID")
+    end
 end
 
 -- When raid EP has been given/taken
