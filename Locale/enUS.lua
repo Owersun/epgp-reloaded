@@ -12,3 +12,4 @@ L["'/w %s !off' for off spec / %d GP"] = true
 L["'/roll' as greed / %d GP"] = true
 L["%d EP added to the Raid"] = true
 L["%d EP substracted from the Raid"] = true
+L["[%s] announcement finished"] = true

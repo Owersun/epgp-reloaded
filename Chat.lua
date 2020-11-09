@@ -12,6 +12,11 @@ function EPGPR:ChatAnnounceLoot(itemLink, GP)
     end
 end
 
+-- Print some form of "No more bids" message, to indicate that timer for an item has ended
+function EPGPR:ChatAnnounceEnd(item)
+    SendChatMessage(L["[%s] announcement finished"]:format(item.name), "RAID")
+end
+
 -- When raid EP has been given/taken
 function EPGPR:ChatRaidEPGiven(EP)
     local message = EP > 0 and "%d EP added to the Raid" or "%d EP substracted from the Raid"

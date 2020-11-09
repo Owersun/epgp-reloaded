@@ -72,16 +72,32 @@ EPGPR.UI.LootOverviewItem = function(slotId, item)
                 statusbar:SetHeight(20)
                 statusbar:SetFullWidth(true)
                 local seconds = EPGPR.config.bidding.countdown
-                local max = seconds * 50
+                local max = seconds / 0.02
                 local i = max
                 statusbar:SetMinMaxValues(0, max)
                 statusbar:SetLabel(seconds)
                 statusbar:SetValue(max)
+                -- animation handler that will decrease statusbar state 50 times per second
                 local countdown = C_Timer.NewTicker(0.02, function()
                     i = i - 1
                     statusbar:SetLabel(math.floor(i / 5) / 10)
                     statusbar:SetValue(i)
-                end, max)
+                end)
+                -- finisher that's going to stop the timer and put announce message into the chat about timer has finished
+                C_Timer.After(seconds, function()
+                    -- ther is no way to cancel the finisher, so we check is our countdown cancelled,
+                    -- and if it is not, then we know we are still on screen running
+                    if (not countdown:IsCancelled()) then
+                        -- cancel the countdown
+                        countdown:Cancel()
+                        -- prettify the label setting it's values to "end"
+                        statusbar:SetLabel("")
+                        statusbar:SetValue(0)
+                        -- print chat message
+                        EPGPR:ChatAnnounceEnd(item)
+                    end
+                end)
+                -- when the widget goes away from the screen, stop the timer
                 statusbar:SetCallback("OnRelease", function() countdown:Cancel() end)
                 widget:AddChild(statusbar)
                 -- DBM/BigWigs countdown bar
