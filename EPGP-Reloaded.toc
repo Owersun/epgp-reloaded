@@ -1,4 +1,4 @@
-## Interface:11305
+## Interface:11306
 ## Title: EPGP Reloaded
 ## Author: OverSun
 ## Notes: EPGP Reloaded is EPGP management and distribution addon. Type /epgp for options
