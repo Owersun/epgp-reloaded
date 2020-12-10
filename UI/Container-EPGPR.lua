@@ -1,7 +1,7 @@
-local EPGPR, AceGUI, RAID_CLASS_COLORS, unpack, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS, IsInRaid, CanEditOfficerNote = EPGPR, EPGPR.Libs.AceGUI, RAID_CLASS_COLORS, unpack, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS, IsInRaid, CanEditOfficerNote
-
--- will modify byttons be disabled
-local canModifyEPGP = CanEditOfficerNote()
+-- our variables
+local EPGPR, AceGUI = EPGPR, EPGPR.Libs.AceGUI
+-- WoW variables
+local RAID_CLASS_COLORS, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS = RAID_CLASS_COLORS, StaticPopup_Show, GetRaidRosterInfo, MAX_RAID_MEMBERS
 
 local function tabStangings(container)
     container:SetLayout("List")
@@ -36,7 +36,7 @@ local function tabStangings(container)
     end
 
     local changeGuildEPGP = AceGUI:Create("Button")
-    changeGuildEPGP:SetDisabled(not changeGuildEPGP)
+    changeGuildEPGP:SetDisabled(not CanEditOfficerNote())
     container:AddChild(changeGuildEPGP)
     changeGuildEPGP:SetText("Change Guild EPGP")
     changeGuildEPGP:SetCallback("OnClick", function()
@@ -90,7 +90,7 @@ local function tabRaid(container)
     end
 
     local changeRaidEP = AceGUI:Create("Button")
-    changeRaidEP:SetDisabled(not IsInRaid("player") or not canModifyEPGP)
+    changeRaidEP:SetDisabled(not IsInRaid("player") or not CanEditOfficerNote())
     container:AddChild(changeRaidEP)
     changeRaidEP:SetText("Add/Remove Raid EP")
     changeRaidEP:SetCallback("OnClick", function()
