@@ -72,9 +72,8 @@ local function tabRaid(container)
     frame:SetColumns(columns)
 
     local function getItems()
-        local isInRaid = IsInRaid("player")
         local items = {}
-        if isInRaid then for n = 1, MAX_RAID_MEMBERS do
+        if IsInRaid("player") then for n = 1, MAX_RAID_MEMBERS do
             local name, _, _, _, _, playerClass, _, online = GetRaidRosterInfo(n)
             if name then
                 local classColor = RAID_CLASS_COLORS[playerClass] and RAID_CLASS_COLORS[playerClass].colorStr or 'ffffffff'
@@ -91,7 +90,7 @@ local function tabRaid(container)
     end
 
     local changeRaidEP = AceGUI:Create("Button")
-    changeRaidEP:SetDisabled(not isInRaid or not canModifyEPGP)
+    changeRaidEP:SetDisabled(not IsInRaid("player") or not canModifyEPGP)
     container:AddChild(changeRaidEP)
     changeRaidEP:SetText("Add/Remove Raid EP")
     changeRaidEP:SetCallback("OnClick", function()
