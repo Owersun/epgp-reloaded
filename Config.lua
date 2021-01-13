@@ -105,6 +105,12 @@ local defaultConfig = {
         [19002] = { 4, 83, 'INVTYPE_TRINKET' },
         -- Head of Nefarian Alliance
         [19003] = { 4, 83, 'INVTYPE_TRINKET' },
+        -- Desecrated Breastplate
+        [22349] = { 4, 92, 'INVTYPE_CHEST' },
+        -- Desecrated Tunic
+        [22350] = { 4, 92, 'INVTYPE_CHEST' },
+        -- Desecrated Robe
+        [22351] = { 4, 92, 'INVTYPE_CHEST' },
         -- Desecrated Legplates
         [22352] = { 4, 88, 'INVTYPE_LEGS' },
         -- Desecrated Helmet
