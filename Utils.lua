@@ -51,7 +51,7 @@ end
 -- Encounter has been won
 function EPGPR:EncounterWon(encounterId)
     local encounter = self.config.encounter[encounterId]
-    if encounter and encounter.track and encounter.EP > 0 then
+    if encounter and encounter.track and encounter.EP and tonumber(encounter.EP) > 0 then
         local names = {}
         -- everyone from standby list first, as they can have reduced EP ratio
         local standbyList = self.config.standby.list or {}
@@ -64,10 +64,11 @@ function EPGPR:EncounterWon(encounterId)
             local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
             if name and online then names[name] = 1 end
         end
+        local EP = tonumber(encounter.EP)
         local bonusEP = EPGPR:calculateEncounterBonus(names)
-        self:GuildAddEP(names, encounter.EP + bonusEP)
-        self:ChatEncounterEPAwarded(encounter.name, encounter.EP, bonusEP)
-        self:AddHistory("RAID", encounter.name, encounter.EP + bonusEP, nil)
+        self:GuildAddEP(names, EP + bonusEP)
+        self:ChatEncounterEPAwarded(encounter.name, EP, bonusEP)
+        self:AddHistory("RAID", encounter.name, EP + bonusEP, nil)
     end
 end
 
